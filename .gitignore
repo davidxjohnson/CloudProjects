@@ -1,0 +1,9 @@
+node_modules/
+cdk.out/
+lib/
+dist/
+.env
+*.log
+*.tsbuildinfo
+.vscode/
+.idea/
