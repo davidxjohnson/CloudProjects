@@ -1,2 +1,3 @@
 packages:
-  - "packages/eks"
+  - "aws-cdk-examples/*"
+  - "aws-sdk-examples/*"

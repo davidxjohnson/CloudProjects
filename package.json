@@ -1,21 +1,39 @@
 {
-  "name": "aws-cdk-projects",
+  "name": "cloud-projects",
   "version": "1.0.0",
-  "description": "",
+  "description": "TypeScript monorepo containing AWS CDK projects and AWS SDK examples",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "./lint.sh",
+    "clean": "pnpm -r exec rm -rf dist lib node_modules",
+    "install:all": "pnpm install"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "aws",
+    "cdk",
+    "typescript",
+    "kubernetes",
+    "infrastructure",
+    "examples"
+  ],
+  "author": "David Johnson",
   "license": "ISC",
   "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=18.19.1",
+    "npm": ">=8.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "dependencies": {
-    "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
-    "aws-cdk-lib": "^2.209.0",
-    "constructs": "^10.4.2"
+    "@aws-cdk/lambda-layer-kubectl-v33": "2.0.0",
+    "aws-cdk-lib": "2.213.0",
+    "constructs": "10.4.2",
+    "commander": "12.1.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "5.9.2",
+    "@types/node": "22.18.6"
   }
 }
