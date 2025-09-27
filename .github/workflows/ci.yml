@@ -170,10 +170,14 @@ jobs:
             echo "No build script found for ${{ matrix.package }}, skipping..."
           fi
 
+      - name: Generate artifact name
+        id: artifact-name
+        run: echo "name=build-$(echo '${{ matrix.package }}' | tr '/' '-')-${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.package }}-${{ github.sha }}
+          name: ${{ steps.artifact-name.outputs.name }}
           path: ${{ matrix.package }}/dist
           retention-days: 1
 
