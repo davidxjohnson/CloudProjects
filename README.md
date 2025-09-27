@@ -7,13 +7,35 @@
 
 A professional-grade TypeScript monorepo containing AWS CDK infrastructure projects and AWS SDK code examples with comprehensive CI/CD, testing, and quality assurance.
 
-## 🚀 Quick Start
+## 🚀 Development Workflow
 
-This monorepo uses pnpm workspaces for package management.
+This project uses **branch protection** and **pull request workflow** to maintain code quality.
+
+### 🔄 Quick Start (New Workflow)
+
+```bash
+# 1. Start new feature
+./scripts/pr-workflow.sh start feature/my-awesome-feature
+
+# 2. Make your changes...
+
+# 3. Validate locally (always do this!)
+./scripts/pr-workflow.sh validate
+
+# 4. Commit changes
+git add .
+git commit -m "feat: add awesome feature"
+
+# 5. Push and create PR
+./scripts/pr-workflow.sh push
+# This gives you a GitHub PR link - click it to create the PR
+
+# 6. Wait for CI/CD to pass, then merge!
+```
 
 ### Prerequisites
-- Node.js 22.20.0+ (recommended) or Node.js 18.19.1+ (minimum)
-- pnpm package manager
+- Node.js 18.19.1 (pinned for stability)
+- pnpm 10.14.0 (managed via package.json)
 - AWS CLI configured (for CDK projects)
 - kubectl configured (for Kubernetes examples)
 
@@ -56,6 +78,35 @@ This monorepo demonstrates:
 - **Monorepo Management**: Efficient workspace organization with pnpm
 - **TypeScript Development**: Strict typing with ES modules and modern standards
 
+## 📚 Documentation & Workflow
+
+- 📖 [Branch Protection Setup](docs/BRANCH_PROTECTION.md) - How to set up GitHub branch protection
+- 🔄 [Contributing Guide](.github/CONTRIBUTING.md) - Contribution guidelines and workflow
+- 🚀 [PR Workflow Scripts](scripts/) - Automated workflow helpers
+- 📋 [Change Log](change-log.md) - Version history and updates
+
+### Workflow Commands
+
+```bash
+# Check current status
+./scripts/pr-workflow.sh status
+
+# Start a new feature
+./scripts/pr-workflow.sh start feature/my-feature
+
+# Validate before pushing (crucial!)
+./scripts/pr-workflow.sh validate
+
+# Push and get PR link
+./scripts/pr-workflow.sh push
+
+# Clean up merged branches
+./scripts/pr-workflow.sh cleanup
+
+# Get help
+./scripts/pr-workflow.sh help
+```
+
 ## 🏆 Quality Metrics
 
 ### Test Coverage
@@ -69,6 +120,7 @@ This monorepo demonstrates:
 - ✅ **Code coverage** reporting with thresholds
 - ✅ **Multi-package builds** with dependency caching
 - ✅ **Branch protection** rules enforced
+- ✅ **Pull request workflow** with quality gates
 
 ### Code Quality Standards
 - TypeScript strict mode throughout
@@ -76,6 +128,7 @@ This monorepo demonstrates:
 - Exact dependency versions (no caret ranges)
 - Comprehensive error handling
 - Professional CLI interfaces
+- Conventional commit messages
 
 ## 🤝 Contributing
 
