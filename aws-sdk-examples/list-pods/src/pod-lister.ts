@@ -50,9 +50,10 @@ export class KubernetesPodLister implements PodLister {
                     }
                     nextToken = res.metadata?._continue;
                 })
-                .catch((error: any) => {
-                    if (error.hasOwnProperty('body')) {
-                        console.error("k8s api returned error:", error.body.message);
+                .catch((error: unknown) => {
+                    if (typeof error === 'object' && error !== null && Object.prototype.hasOwnProperty.call(error, 'body')) {
+                        const errorWithBody = error as { body: { message: string } };
+                        console.error("k8s api returned error:", errorWithBody.body.message);
                     } else {
                         console.error("k8s api not reachable:", error);
                     }

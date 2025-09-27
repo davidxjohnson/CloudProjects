@@ -13,8 +13,8 @@ export default defineConfig({
         // Environment
         environment: 'node',
 
-        // Global test functions (describe, it, expect)
-        globals: true,
+        // Global test functions (describe, it, expect) - disabled for explicit imports
+        globals: false,
 
         // Coverage configuration
         coverage: {

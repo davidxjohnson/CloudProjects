@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "lib": [
       "ES2022"
     ],
@@ -19,10 +19,10 @@
     "strictFunctionTypes": true,
     "sourceMap": true,
     "removeComments": true,
-    "types": [
-      "node",
-      "vitest/globals"
-    ]
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "types": []
   },
   "include": [
     "src/**/*.ts"
