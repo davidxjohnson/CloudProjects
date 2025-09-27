@@ -13,7 +13,7 @@ Welcome! This guide will help you contribute to the CloudProjects monorepo effec
 ### Development Setup
 ```bash
 # Clone the repository
-git clone https://github.com/davidxjohnson/AwsCdkProjects.git
+git clone https://github.com/davidxjohnson/CloudProjects.git
 cd CloudProjects
 
 # Install dependencies

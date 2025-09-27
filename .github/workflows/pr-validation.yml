@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 env:
-  NODE_VERSION: '22.20.0'
+  NODE_VERSION: '18.19.1'
   PNPM_VERSION: '10.14.0'
 
 jobs:

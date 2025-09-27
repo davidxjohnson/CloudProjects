@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 env:
-  NODE_VERSION: '22.20.0'
+  NODE_VERSION: '18.19.1'
   PNPM_VERSION: '10.14.0'
 
 jobs:
@@ -86,10 +86,25 @@ jobs:
 
       - name: Run linter
         run: |
+          # Check if root has lint script
           if [ -f "package.json" ] && grep -q '"lint"' package.json; then
+            echo "Running root lint script..."
             pnpm lint
           else
-            echo "No lint script found, skipping..."
+            echo "No root lint script found, checking individual packages..."
+            # Try linting individual packages
+            for dir in aws-cdk-examples/*/; do
+              if [ -f "$dir/package.json" ] && grep -q '"lint"' "$dir/package.json"; then
+                echo "Linting $dir..."
+                cd "$dir" && pnpm lint && cd ../..
+              fi
+            done
+            for dir in aws-sdk-examples/*/; do
+              if [ -f "$dir/package.json" ] && grep -q '"lint"' "$dir/package.json"; then
+                echo "Linting $dir..."
+                cd "$dir" && pnpm lint && cd ../..
+              fi
+            done
           fi
 
       - name: Check formatting
