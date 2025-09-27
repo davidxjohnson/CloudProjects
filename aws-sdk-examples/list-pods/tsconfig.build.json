@@ -5,10 +5,5 @@
     "src/**/*.spec.ts",
     "**/*.test.*",
     "**/*.spec.*"
-  ],
-  "compilerOptions": {
-    "types": [
-      "node"
-    ]
-  }
+  ]
 }
