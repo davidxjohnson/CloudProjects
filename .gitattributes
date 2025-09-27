@@ -1,0 +1,66 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Text files
+*.ts text
+*.tsx text
+*.js text
+*.jsx text
+*.json text
+*.md text
+*.yml text
+*.yaml text
+*.xml text
+*.html text
+*.css text
+*.scss text
+*.less text
+*.svg text
+*.txt text
+
+# Shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Config files
+.gitignore text
+.gitattributes text
+.editorconfig text
+.eslintrc* text
+.prettierrc* text
+tsconfig*.json text
+*.config.js text
+*.config.ts text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.flv binary
+*.fla binary
+*.swf binary
+*.gz binary
+*.zip binary
+*.7z binary
+*.ttf binary
+*.eot binary
+*.woff binary
+*.woff2 binary
+
+# Exclude files from export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+.github/ export-ignore
+.vscode/ export-ignore
+.idea/ export-ignore
+*.log export-ignore
+.env* export-ignore
+test/ export-ignore
+tests/ export-ignore
+*.test.* export-ignore
+*.spec.* export-ignore

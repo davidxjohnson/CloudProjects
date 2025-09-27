@@ -1,0 +1,30 @@
+# Global code owners - require review for all changes
+* @davidxjohnson
+
+# AWS SDK Examples - require review from AWS experts
+aws-sdk-examples/ @davidxjohnson
+
+# AWS CDK Examples - require review from CDK experts  
+aws-cdk-examples/ @davidxjohnson
+
+# Critical infrastructure files - require admin review
+package.json @davidxjohnson
+pnpm-workspace.yaml @davidxjohnson
+tsconfig.json @davidxjohnson
+
+# CI/CD and GitHub workflows - require admin review
+.github/ @davidxjohnson
+.github/workflows/ @davidxjohnson
+
+# Documentation - can be reviewed by any maintainer
+*.md @davidxjohnson
+docs/ @davidxjohnson
+
+# Testing configuration - require review from test experts
+**/vitest.config.ts @davidxjohnson
+**/jest.config.js @davidxjohnson
+**/*.test.ts @davidxjohnson
+**/*.spec.ts @davidxjohnson
+
+# High-value packages that need extra scrutiny
+aws-sdk-examples/list-pods/ @davidxjohnson

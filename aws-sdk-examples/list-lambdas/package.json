@@ -1,0 +1,23 @@
+{
+  "name": "@cloud-projects/list-lambdas-example",
+  "version": "1.0.0",
+  "description": "TypeScript example for listing AWS Lambda functions",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=18.19.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-lambda": "3.893.0",
+    "@aws-sdk/types": "3.862.0",
+    "commander": "12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.6"
+  }
+}

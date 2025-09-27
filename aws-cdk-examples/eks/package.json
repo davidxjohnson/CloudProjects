@@ -1,0 +1,26 @@
+{
+  "name": "@cloud-projects/eks",
+  "version": "1.0.0",
+  "description": "Complete EKS cluster deployment using AWS CDK",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.19.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff",
+    "destroy": "cdk destroy",
+    "cdk": "cdk"
+  },
+  "dependencies": {
+    "@aws-cdk/lambda-layer-kubectl-v32": "2.1.0",
+    "aws-cdk-lib": "2.213.0",
+    "constructs": "10.4.2"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2"
+  }
+}
