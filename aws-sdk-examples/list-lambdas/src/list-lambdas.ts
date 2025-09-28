@@ -22,6 +22,7 @@ export function parseCommandLineOptions(argv: string[] = process.argv): LambdaLi
     return options;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function runListLambdas(options: LambdaListOptions, lambdaLister: any): Promise<void> {
     await lambdaLister.listLambdas(options);
 }
@@ -35,9 +36,10 @@ export async function main(): Promise<void> {
         await runListLambdas(options, lambdaLister);
     } catch (error) {
         console.error('Error:', error);
-            process.exit(1);
-        }
+        process.exit(1);
     }
+}
+
 // Only run main if this file is executed directly (ES module equivalent)
 if (import.meta.url === `file://${process.argv[1]}`) {
     main();

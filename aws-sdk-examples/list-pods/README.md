@@ -1,23 +1,19 @@
 # @cloud-projects/list-pods-example
 
 ### Description
-A comprehensive TypeScript example demonstrating how to list Kubernetes pods using the [@kubernetes/client-node](https://github.com/kubernetes-client/javascript) library. This example includes pagination support, error handling, command-line interface, and extensive testing capabilities with mocking and code coverage metrics.
+A comprehensive TypeScript example demonstrating how to list Kubernetes pods using the [@kubernetes/client-node](https://github.com/kubernetes-client/javascript) library. This example includes pagination support, error handling, command-line interface, and extensive testing capabilities.
 
 Part of the CloudProjects monorepo showcasing modern TypeScript development practices for cloud infrastructure automation. 
 
 ### What makes this example notable?
 
-* **Modern TypeScript Configuration** - Uses ES2022 target with **ES modules** for Node.js 22.x compatibility, strict typing throughout
+* **Kubernetes Client Benefits** - Modern JavaScript client with async/await support and comprehensive TypeScript definitions for all K8s resources
 
-* **Professional Testing with Vitest** - Uses **Vitest 2.1.8** with comprehensive mocking capabilities, achieving **97.61% code coverage** with 11 passing tests
+* **Modern TypeScript Configuration** - ES2022 with ES modules, strict typing throughout with comprehensive interface definitions
 
-* **Production-Ready Error Handling** - Properly handles both API errors (namespace not found, permissions) and connection errors (network issues, cluster unreachable)
+* **Professional Testing with Vitest** - Comprehensive testing achieving **97.61% coverage** with **11 passing tests**
 
-* **Pagination Support** - Implements proper pagination handling for large Kubernetes clusters using continuation tokens, following best practices for the `listNamespacedPod` API
-
-* **Command-Line Interface** - Uses Commander.js for professional CLI with help, options validation, and sensible defaults
-
-* **Monorepo Integration** - Part of CloudProjects monorepo with exact dependency versioning and workspace management via pnpm  
+* **Production-Ready Features** - Proper pagination with continuation tokens, comprehensive error handling, and professional CLI interface
 
 ## Prerequisites
 
@@ -128,7 +124,7 @@ bye
 
 ## Testing
 
-This example includes **professional-grade testing with Vitest**:
+This example includes **professional-grade testing with Vitest and comprehensive mocking**:
 
 ```bash
 pnpm test           # Run all tests
@@ -137,12 +133,13 @@ pnpm test:coverage  # Run with coverage
 pnpm test:ui        # Interactive UI mode
 ```
 
-### Excellent Coverage Results
-- **11 passing tests** covering CLI and core logic
-- **97.61% statement coverage** (exceeds 70% threshold ✅)
-- **89.47% branch coverage** (exceeds 60% threshold ✅)
-- **100% function coverage** (exceeds 70% threshold ✅)
-- **97.61% line coverage** (exceeds 70% threshold ✅)
+### Modern Testing Architecture
+This project uses **Vitest 2.1.8** with professional-grade features:
+- **Built-in vi.mock()** - Clean, intuitive mocking system
+- **Native TypeScript support** - No configuration headaches
+- **Built-in coverage** - v8 provider with HTML reports
+- **Watch mode & UI** - Excellent developer experience
+- **ES module support** - Modern JavaScript standards
 
 ### Test Coverage
 - ✅ **CLI Interface Testing** - Command line argument parsing, defaults, error handling
@@ -153,17 +150,16 @@ pnpm test:ui        # Interactive UI mode
 - ✅ **Constructor Patterns** - Default and custom client injection
 - ✅ **Process Exit Handling** - Error recovery and proper cleanup
 
-### Modern Testing Architecture
-This project uses **Vitest 2.1.8** with professional-grade features:
-- **Built-in vi.mock()** - Clean, intuitive mocking system
-- **Native TypeScript support** - No configuration headaches
-- **Built-in coverage** - v8 provider with HTML reports
-- **Watch mode & UI** - Excellent developer experience
-- **ES module support** - Modern JavaScript standards
+### Excellent Coverage Results
+- **11 passing tests** covering CLI and core logic
+- **97.61% statement coverage** (exceeds 70% threshold ✅)
+- **89.47% branch coverage** (exceeds 60% threshold ✅)
+- **100% function coverage** (exceeds 70% threshold ✅)
+- **97.61% line coverage** (exceeds 70% threshold ✅)
 
 See [COVERAGE.md](./COVERAGE.md) for detailed code coverage analysis and testing documentation.
 
-## Architecture
+## Repo Organization
 
 ### File Structure
 ```
@@ -204,12 +200,3 @@ for (const pod of res.items as k8s.V1Pod[]) {
 - **Permission denied** - Ensure your kubeconfig has proper RBAC permissions
 - **Connection timeout** - Increase timeout with `-t <seconds>` option
 - **Large clusters** - Use smaller page limits with `-p <number>` option
-
-## Contributing
-
-This example follows CloudProjects monorepo patterns:
-- Exact dependency versions (no caret ranges)
-- **ES modules** for modern JavaScript standards
-- **Vitest testing framework** with professional coverage standards
-- Comprehensive error handling and CLI interfaces
-- TypeScript with strict typing throughout
