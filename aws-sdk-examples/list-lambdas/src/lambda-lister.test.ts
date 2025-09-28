@@ -131,6 +131,7 @@ describe('LambdaLister', () => {
 
             // Create async iterator that throws
             const mockPaginator = {
+                // eslint-disable-next-line require-yield
                 async *[Symbol.asyncIterator]() {
                     throw apiError
                 }

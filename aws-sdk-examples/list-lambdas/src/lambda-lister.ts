@@ -9,10 +9,6 @@ export interface LambdaListOptions {
     // any other options you want to add
 }
 
-export interface LambdaLister {
-    listLambdas(options: LambdaListOptions): Promise<void>
-}
-
 export class LambdaLister {
     private lambdaClient: LambdaClient
 
@@ -42,10 +38,11 @@ export class LambdaLister {
                     funcList.push(func.FunctionName!)
                 }
             }
-        } catch (error: any) {
-            if (error.body) {
+        } catch (error: unknown) {
+            const errorObj = error as { body?: { message?: string } }
+            if (errorObj.body) {
                 // AWS API specific error
-                console.error('AWS Lambda API returned error:', error.body.message || error.body)
+                console.error('AWS Lambda API returned error:', errorObj.body.message || errorObj.body)
             } else {
                 // Connection or other error
                 console.error('AWS Lambda API not reachable:', error)

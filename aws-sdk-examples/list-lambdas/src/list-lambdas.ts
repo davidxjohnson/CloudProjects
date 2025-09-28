@@ -4,7 +4,7 @@
 
 
 import { Command, Option } from 'commander'
-import { LambdaListOptions } from './lambda-lister.js';
+import { LambdaListOptions, LambdaLister } from './lambda-lister.js';
 
 export function parseCommandLineOptions(argv: string[] = process.argv): LambdaListOptions {
     const flag: Command = new Command()
@@ -22,7 +22,7 @@ export function parseCommandLineOptions(argv: string[] = process.argv): LambdaLi
     return options;
 }
 
-export async function runListLambdas(options: LambdaListOptions, lambdaLister: any): Promise<void> {
+export async function runListLambdas(options: LambdaListOptions, lambdaLister: LambdaLister): Promise<void> {
     await lambdaLister.listLambdas(options);
 }
 
