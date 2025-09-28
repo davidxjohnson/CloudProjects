@@ -34,14 +34,16 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -74,14 +76,15 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: Restore pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ needs.setup.outputs.cache-key }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -146,14 +149,15 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: Restore pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ needs.setup.outputs.cache-key }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -196,7 +200,7 @@ jobs:
           - name: list-lambdas
             path: aws-sdk-examples/list-lambdas
             filter: "@cloud-projects/list-lambdas-example" 
-            coverage-threshold: 50
+            coverage-threshold: 95
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -212,14 +216,15 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: Restore pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ needs.setup.outputs.cache-key }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
@@ -284,14 +289,15 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Get pnpm store directory
+        id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+          echo "store-path=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
       - name: Restore pnpm cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.STORE_PATH }}
+          path: ${{ steps.pnpm-cache.outputs.store-path }}
           key: ${{ needs.setup.outputs.cache-key }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
