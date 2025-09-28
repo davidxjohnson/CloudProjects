@@ -22,7 +22,7 @@ export function parseCommandLineOptions(argv: string[] = process.argv): LambdaLi
     return options;
 }
 
-export async function runListLambdas(options: LambdaListOptions, lambdaLister: LambdaLister): Promise<void> {
+export async function runListLambdas(options: LambdaListOptions, lambdaLister: any): Promise<void> {
     await lambdaLister.listLambdas(options);
 }
 
