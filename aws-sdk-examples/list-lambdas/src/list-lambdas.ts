@@ -36,9 +36,9 @@ export async function main(): Promise<void> {
         await runListLambdas(options, lambdaLister);
     } catch (error) {
         console.error('Error:', error);
-            process.exit(1);
-        }
+        process.exit(1);
     }
+}
 // Only run main if this file is executed directly (ES module equivalent)
 if (import.meta.url === `file://${process.argv[1]}`) {
     main();

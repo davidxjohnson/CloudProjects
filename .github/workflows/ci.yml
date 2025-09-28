@@ -233,18 +233,13 @@ jobs:
       - name: Install package dependencies
         run: |
           cd ${{ matrix.package.path }}
-          echo "📍 Current directory: $(pwd)"
-          echo "📦 Package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
-          echo "🔍 Node modules exists: $(test -d node_modules && echo 'YES' || echo 'NO')"
           pnpm install
 
       - name: Run tests
         run: |
           cd ${{ matrix.package.path }}
-          echo "🧪 Running tests for ${{ matrix.package.name }}"
-          echo "📍 Current directory: $(pwd)"
-          echo "📝 Test script exists: $(grep -q '\"test\"' package.json && echo 'YES' || echo 'NO')"
           if [ -f "package.json" ] && grep -q '"test"' package.json; then
+            echo "🧪 Running tests for ${{ matrix.package.name }}"
             pnpm test
           else
             echo "No test script found for ${{ matrix.package.name }}, skipping..."
@@ -254,10 +249,8 @@ jobs:
       - name: Run coverage
         run: |
           cd ${{ matrix.package.path }}
-          echo "📊 Running coverage for ${{ matrix.package.name }}"
-          echo "📍 Current directory: $(pwd)"
-          echo "📝 Coverage script exists: $(grep -q '\"test:coverage\"' package.json && echo 'YES' || echo 'NO')"
           if [ -f "package.json" ] && grep -q '"test:coverage"' package.json; then
+            echo "📊 Running coverage for ${{ matrix.package.name }}"
             pnpm test:coverage
           else
             echo "No coverage script found for ${{ matrix.package.name }}, skipping..."

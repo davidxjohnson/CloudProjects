@@ -25,11 +25,11 @@ export class LambdaLister {
         const clientInput: ListFunctionsCommandInput = {} //FunctionVersion: 'ALL', MasterRegion: defaultRegion }
         const paginatorConfig: LambdaPaginationConfiguration = { client: this.lambdaClient, pageSize: options.pagesize } //, stopOnSameToken: false }
         const paginator: AsyncIterable<ListFunctionsCommandOutput> = paginateListFunctions(paginatorConfig, clientInput)
-        
+
         // using the nice features of SDK V3 to get a list of lambda names
         process.stdout.write('processing')
         const funcList: string[] = []; // populate some useful object, depending on what data you want
-        
+
         try {
             for await (const page of paginator) { // itterate through pages
                 // the ! after the 'Functions' object tells the compiler to 'just trust me' ...
@@ -38,6 +38,11 @@ export class LambdaLister {
                     funcList.push(func.FunctionName!)
                 }
             }
+            
+            // Output the results
+            console.log('')  // New line after processing dots
+            console.log(JSON.stringify(funcList, null, 2))
+            console.log('success!')
         } catch (error: unknown) {
             const errorObj = error as { body?: { message?: string } }
             if (errorObj.body) {
