@@ -38,7 +38,7 @@ export class LambdaLister {
                     funcList.push(func.FunctionName!)
                 }
             }
-            
+
             // Output the results
             console.log('')  // New line after processing dots
             console.log(JSON.stringify(funcList, null, 2))
