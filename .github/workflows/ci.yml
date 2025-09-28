@@ -195,11 +195,9 @@ jobs:
         package:
           - name: list-pods
             path: aws-sdk-examples/list-pods
-            filter: "@cloud-projects/list-pods-example"
             coverage-threshold: 70
           - name: list-lambdas
             path: aws-sdk-examples/list-lambdas
-            filter: "@cloud-projects/list-lambdas-example" 
             coverage-threshold: 95
     steps:
       - name: Checkout code
