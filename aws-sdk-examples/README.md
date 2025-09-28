@@ -52,27 +52,3 @@ pnpm --filter @cloud-projects/list-lambdas-example start
 pnpm --filter @cloud-projects/list-pods-example build
 pnpm --filter @cloud-projects/list-pods-example start
 ```
-
-## Testing Examples
-
-Several examples include comprehensive testing capabilities:
-
-- **`list-pods`** - Includes **Vitest testing framework** with professional-grade mocking capabilities for Kubernetes API and **97.61% code coverage**
-  ```bash
-  cd aws-sdk-examples/list-pods
-  pnpm test           # Run tests
-  pnpm test:coverage  # Run with coverage
-  pnpm test:watch     # Watch mode
-  pnpm test:ui        # UI mode
-  ```
-
-## Contributing
-
-Feel free to contribute additional AWS SDK examples following the existing patterns. Each example should:
-- Be in its own directory under `aws-sdk-examples/`
-- Use the `@cloud-projects/` namespace in package.json
-- Include a descriptive README explaining what the example does and how to use it
-- Include proper TypeScript configuration with exact dependency versions
-- Include error handling and command-line interface where appropriate
-- Consider adding tests with mocking capabilities for external services
-- Be executable and well-documented
