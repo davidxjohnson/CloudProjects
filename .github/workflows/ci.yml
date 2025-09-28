@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  statuses: write
+
 env:
   NODE_VERSION: '18.19.1'
   PNPM_VERSION: '10.14.0'
@@ -168,8 +174,9 @@ jobs:
           fi
 
       - name: Upload coverage reports to Codecov
-        if: always()
+        if: always() && !cancelled()
         uses: codecov/codecov-action@v3
+        continue-on-error: true
         with:
           file: ${{ matrix.package.path }}/coverage/lcov.info
           flags: ${{ matrix.package.name }}
@@ -177,8 +184,9 @@ jobs:
           fail_ci_if_error: false
 
       - name: Coverage comment
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && !cancelled()
         uses: romeovs/lcov-reporter-action@v0.3.1
+        continue-on-error: true
         with:
           lcov-file: ${{ matrix.package.path }}/coverage/lcov.info
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -245,8 +253,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, build, test, security]
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Enable auto-merge for Dependabot PRs
+        continue-on-error: true
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
