@@ -3,7 +3,7 @@
   "context": {
     "clusterName": "MyEksCluster",
     "maxAzs": 2,
-    "k8sVersion": "1_32",
+    "k8sVersion": "1_33",
     "defaultCapacity": 2
   }
 }
