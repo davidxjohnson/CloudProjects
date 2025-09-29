@@ -18,7 +18,7 @@
   "dependencies": {
     "@aws-sdk/client-lambda": "3.896.0",
     "@aws-sdk/types": "3.893.0",
-    "commander": "12.1.0"
+    "commander": "13.1.0"
   },
   "devDependencies": {
     "@types/node": "22.18.6",
