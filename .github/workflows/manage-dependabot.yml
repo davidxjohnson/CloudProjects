@@ -5,6 +5,10 @@ on:
   pull_request:
     types: [opened, closed, synchronize, ready_for_review]
   
+  # Run on pushes to main and feature branches
+  push:
+    branches: [main, 'feature/*']
+  
   # Run on schedule to catch any edge cases
   schedule:
     - cron: '0 */6 * * *'  # Every 6 hours
