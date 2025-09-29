@@ -13,10 +13,11 @@ When working on complex feature branches (like our comprehensive testing impleme
 ## 🛡️ **Solution**
 
 Our automated system:
-1. **Detects non-Dependabot PRs** and temporarily disables auto-merge
+1. **Detects non-Dependabot PRs** and temporarily disables auto-merge on Dependabot PRs.
 2. **Waits for feature work to complete** before processing dependency updates
-3. **Automatically re-enables** auto-merge when all feature PRs are resolved
-4. **Batches dependency updates** for cleaner integration
+3. **Automatically re-enables** auto-merge Dependabot PRs when all feature PRs are resolved
+4. **Updates stale Dependabot PRs** by triggering `@dependabot rebase` to bring them up to date with main
+5. **Batches dependency updates** Dependabot will auto-merge if all quality gates are passed
 
 ## 🚀 **How It Works**
 
@@ -48,6 +49,14 @@ The `.github/workflows/manage-dependabot.yml` workflow:
 - Creates PRs for visibility when changing auto-merge status
 - Provides status summaries and notifications
 
+### **Automatic PR Updates**
+When re-enabling auto-merge, the system automatically:
+- **Tracks waiting time** for Dependabot PRs blocked by feature development
+- **Automatically rebases PRs** that have been waiting 7+ days when window opens
+- **Ensures PRs are up-to-date** before auto-merge attempts
+- **Handles branch protection requirements** for current branches
+- **Prioritizes long-waiting PRs** for immediate attention
+
 ## 📊 **Workflow Example**
 
 ### **Scenario: Complex Feature Development**
@@ -63,7 +72,7 @@ The `.github/workflows/manage-dependabot.yml` workflow:
 
 # Day 6: Feature complete and merged
 ./scripts/dependabot-helper enable  
-# ✅ Auto-merge re-enabled, Dependabot PRs process automatically
+# ✅ Auto-merge re-enabled, Dependabot PRs updated and process automatically
 ```
 
 ## 🔧 **Configuration**
@@ -74,6 +83,12 @@ Dependabot PRs still must pass all quality gates:
 - ✅ Build success
 - ✅ Test coverage thresholds
 - ✅ Security audit
+
+### **Smart Waiting Logic**
+The system tracks how long Dependabot PRs have been blocked:
+- **7+ days waiting**: PRs are automatically rebased when development window opens
+- **Prevents indefinite delays**: Long-waiting dependency updates get priority
+- **Configurable threshold**: Can adjust waiting time based on project velocity
 
 ### **Repository Settings**
 Update `scripts/manage-dependabot-automerge.sh`:

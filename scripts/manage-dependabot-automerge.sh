@@ -11,6 +11,9 @@ REPO_NAME="CloudProjects"
 WORKFLOW_FILE=".github/workflows/ci.yml"
 TEMP_BRANCH="temp/dependabot-automerge-$(date +%s)"
 
+# Dependabot waiting threshold (7 days)
+DEPENDABOT_WAITING_THRESHOLD_DAYS=7
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -70,6 +73,104 @@ has_dependabot_prs() {
 get_dependabot_prs() {
     local prs=$(get_open_prs)
     echo "$prs" | jq -r '.[] | select(.author.login == "dependabot[bot]") | "\(.number) \(.title)"'
+}
+
+# Get Dependabot PR numbers only
+get_dependabot_pr_numbers() {
+    local prs=$(get_open_prs)
+    echo "$prs" | jq -r '.[] | select(.author.login == "dependabot[bot]") | .number'
+}
+
+# Get Dependabot PRs with creation date
+get_dependabot_prs_with_age() {
+    local prs=$(get_open_prs)
+    echo "$prs" | jq -r '.[] | select(.author.login == "dependabot[bot]") | "\(.number) \(.title) \(.createdAt)"'
+}
+
+# Check if Dependabot PR has been waiting too long
+check_dependabot_waiting_time() {
+    local pr_created_at="$1"
+    local current_date=$(date -u +%s)
+    local pr_date=$(date -u -d "$pr_created_at" +%s)
+    local days_waiting=$(( (current_date - pr_date) / 86400 ))
+    
+    echo $days_waiting
+}
+
+# Get Dependabot PRs that need rebasing due to long wait
+get_dependabot_prs_needing_rebase() {
+    local prs_with_age=$(get_dependabot_prs_with_age)
+    local prs_needing_rebase=""
+    
+    while IFS= read -r line; do
+        if [ -n "$line" ]; then
+            local pr_number=$(echo "$line" | cut -d' ' -f1)
+            local pr_created_at=$(echo "$line" | rev | cut -d' ' -f1 | rev)
+            local days_waiting=$(check_dependabot_waiting_time "$pr_created_at")
+            
+            if [ "$days_waiting" -ge "$DEPENDABOT_WAITING_THRESHOLD_DAYS" ]; then
+                if [ -n "$prs_needing_rebase" ]; then
+                    prs_needing_rebase="$prs_needing_rebase\n$pr_number (waiting $days_waiting days)"
+                else
+                    prs_needing_rebase="$pr_number (waiting $days_waiting days)"
+                fi
+            fi
+        fi
+    done <<< "$prs_with_age"
+    
+    echo -e "$prs_needing_rebase"
+}
+
+# Update stale Dependabot PRs to latest main
+update_dependabot_prs() {
+    local pr_numbers=$(get_dependabot_pr_numbers)
+    local prs_needing_rebase=$(get_dependabot_prs_needing_rebase)
+    
+    if [ -z "$pr_numbers" ]; then
+        log_info "No Dependabot PRs to update"
+        return 0
+    fi
+    
+    log_info "Checking Dependabot PRs for staleness and waiting time..."
+    
+    if [ -n "$prs_needing_rebase" ]; then
+        log_warning "Dependabot PRs that have been waiting $DEPENDABOT_WAITING_THRESHOLD_DAYS+ days:"
+        echo -e "$prs_needing_rebase" | while read -r line; do
+            if [ -n "$line" ]; then
+                echo "  - PR #$line"
+            fi
+        done
+        echo
+        
+        # Rebase PRs that have been waiting too long
+        echo -e "$prs_needing_rebase" | while read -r line; do
+            if [ -n "$line" ]; then
+                local pr_number=$(echo "$line" | cut -d' ' -f1)
+                log_info "Rebasing long-waiting Dependabot PR #$pr_number..."
+                gh pr comment $pr_number --repo "$REPO_OWNER/$REPO_NAME" --body "@dependabot rebase" || true
+                sleep 2
+            fi
+        done
+    fi
+    
+    # Also check all Dependabot PRs for general staleness (behind main)
+    for pr_number in $pr_numbers; do
+        # Skip if we already rebased due to waiting time
+        if echo -e "$prs_needing_rebase" | grep -q "^$pr_number "; then
+            continue
+        fi
+        
+        log_info "Checking PR #$pr_number for general staleness..."
+        
+        # Check if PR is behind main by requesting a rebase
+        # (This is safer than trying to detect staleness programmatically)
+        log_info "Requesting standard rebase for PR #$pr_number..."
+        gh pr comment $pr_number --repo "$REPO_OWNER/$REPO_NAME" --body "@dependabot rebase" || true
+        
+        sleep 2
+    done
+    
+    log_success "Dependabot PR update requests sent"
 }
 
 # Get non-Dependabot PRs  
@@ -186,6 +287,10 @@ enable_automerge() {
     git checkout main
     git branch -D "$TEMP_BRANCH"
     
+    # Update any stale Dependabot PRs after re-enabling auto-merge
+    log_info "Checking for stale Dependabot PRs that need updating..."
+    update_dependabot_prs
+    
     log_success "Dependabot auto-merge enabled via PR"
 }
 
@@ -231,12 +336,29 @@ main() {
                 echo "    - PR #$line"
             done
             echo
+            
+            # Show PRs that have been waiting too long
+            local prs_waiting_too_long=$(get_dependabot_prs_needing_rebase)
+            if [ -n "$prs_waiting_too_long" ]; then
+                log_warning "⏰ PRs waiting $DEPENDABOT_WAITING_THRESHOLD_DAYS+ days (will be rebased):"
+                echo -e "$prs_waiting_too_long" | while read -r line; do
+                    if [ -n "$line" ]; then
+                        echo "    - PR #$line"
+                    fi
+                done
+                echo
+            fi
 
             if [ "$automerge_enabled" = "false" ]; then
                 log_info "Enabling auto-merge for Dependabot PRs"
                 enable_automerge
             else
                 log_success "Auto-merge is already enabled ✅"
+                # Even if auto-merge is enabled, update long-waiting PRs
+                if [ -n "$prs_waiting_too_long" ]; then
+                    log_info "Updating long-waiting Dependabot PRs..."
+                    update_dependabot_prs
+                fi
             fi
         else
             log_success "No Dependabot PRs pending"
