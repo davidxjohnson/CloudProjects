@@ -5,12 +5,52 @@
 
 version: 2
 updates:
+  # Root workspace - manages shared dependencies
   - package-ecosystem: "npm"
-    directory: "/"                # Root package.json
+    directory: "/"
     schedule:
       interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/packages/eks" # App package.json
+    groups:
+      # Group all AWS SDK updates into single PR
+      aws-sdk:
+        patterns:
+          - "@aws-sdk/*"
+          - "aws-sdk"
+      # Group all testing framework updates
+      testing:
+        patterns:
+          - "vitest*"
+          - "@vitest/*"
+          - "jest*"
+          - "@jest/*"
+      # Group all TypeScript/build tools
+      build-tools:
+        patterns:
+          - "typescript"
+          - "@types/*"
+          - "eslint*"
+          - "@typescript-eslint/*"
+      # Group all AWS CDK updates
+      aws-cdk:
+        patterns:
+          - "aws-cdk-lib"
+          - "@aws-cdk/*"
+          - "constructs"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+
+  # Individual packages only if they have unique dependencies
+  - package-ecosystem: "npm" 
+    directory: "/aws-cdk-examples/eks"
     schedule:
       interval: "weekly"
-    # Optionally, add more packages here if you have them
+    groups:
+      aws-cdk-eks:
+        patterns:
+          - "aws-cdk-lib"
+          - "@aws-cdk/*"
+          - "constructs"
+    commit-message:
+      prefix: "deps(eks)"
+      include: "scope"
