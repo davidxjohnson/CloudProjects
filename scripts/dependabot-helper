@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Simple helper script for Dependabot auto-merge management
+# This provides easy commands for developers
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MANAGE_SCRIPT="$SCRIPT_DIR/manage-dependabot-automerge.sh"
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+show_help() {
+    cat << EOF
+🤖 Dependabot Helper Commands
+
+USAGE:
+    dependabot-helper <command>
+
+COMMANDS:
+    status          Show current Dependabot and PR status
+    disable         Disable Dependabot auto-merge (when starting feature work)
+    enable          Enable Dependabot auto-merge (when feature work is done)
+    auto            Run automatic management based on current PR state
+    help            Show this help
+
+EXAMPLES:
+    # Check current status
+    ./scripts/dependabot-helper status
+
+    # Disable auto-merge before starting complex feature work
+    ./scripts/dependabot-helper disable
+
+    # Enable auto-merge after merging all feature PRs
+    ./scripts/dependabot-helper enable
+
+    # Let the script decide what to do automatically
+    ./scripts/dependabot-helper auto
+
+WORKFLOW:
+    1. Starting feature work → Run 'disable'
+    2. Check status anytime → Run 'status'  
+    3. Feature work complete → Run 'enable' or 'auto'
+
+EOF
+}
+
+case "${1:-help}" in
+    status)
+        echo -e "${BLUE}📊 Checking Dependabot Status...${NC}"
+        "$MANAGE_SCRIPT" --status
+        ;;
+    disable)
+        echo -e "${YELLOW}🛑 Disabling Dependabot Auto-merge...${NC}"
+        "$MANAGE_SCRIPT" --force-disable
+        ;;
+    enable)
+        echo -e "${GREEN}🚀 Enabling Dependabot Auto-merge...${NC}"
+        "$MANAGE_SCRIPT" --force-enable
+        ;;
+    auto)
+        echo -e "${BLUE}🤖 Running Automatic Dependabot Management...${NC}"
+        "$MANAGE_SCRIPT"
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "❌ Unknown command: $1"
+        echo ""
+        show_help
+        exit 1
+        ;;
+esac

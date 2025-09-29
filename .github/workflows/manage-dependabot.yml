@@ -1,0 +1,139 @@
+name: Manage Dependabot Auto-merge
+
+on:
+  # Run when PRs are opened, closed, or synchronized
+  pull_request:
+    types: [opened, closed, synchronize, ready_for_review]
+  
+  # Run on pushes to main and feature branches
+  push:
+    branches: [main, 'feature/*']
+  
+  # Run on schedule to catch any edge cases
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - force-disable
+          - force-enable
+          - status-only
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  manage-dependabot:
+    name: Manage Dependabot Auto-merge
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Need full history to create branches
+          fetch-depth: 0
+          # Use a token that can create PRs
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup GitHub CLI
+        run: |
+          # GitHub CLI is pre-installed on GitHub runners
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Dependabot Management
+        run: |
+          case "auto" in
+            "auto")
+              echo "🤖 Running automatic Dependabot management"
+              echo "ℹ️  Note: This is a monitoring-only mode"
+              echo "ℹ️  For actual auto-merge control, use manual commands:"
+              echo "   ./scripts/dependabot-helper disable"
+              echo "   ./scripts/dependabot-helper enable" 
+              ./scripts/manage-dependabot-automerge.sh --status
+              ;;
+            "force-disable")
+              echo "🛑 Force disabling Dependabot auto-merge"
+              ./scripts/manage-dependabot-automerge.sh --force-disable
+              ;;
+            "force-enable")
+              echo "🚀 Force enabling Dependabot auto-merge"  
+              ./scripts/manage-dependabot-automerge.sh --force-enable
+              ;;
+            "status-only")
+              echo "📊 Status check only"
+              ./scripts/manage-dependabot-automerge.sh --status
+              ;;
+          esac
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## 🤖 Dependabot Auto-merge Management Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger:** ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Action:** ${{ inputs.action || 'auto' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Get current status
+          NON_DEPENDABOT=$(./scripts/manage-dependabot-automerge.sh --status | grep "Non-Dependabot PRs:" | cut -d: -f2 | xargs)
+          DEPENDABOT=$(./scripts/manage-dependabot-automerge.sh --status | grep "Dependabot PRs:" | cut -d: -f2 | xargs)
+          AUTOMERGE=$(./scripts/manage-dependabot-automerge.sh --status | grep "Auto-merge enabled:" | cut -d: -f2 | xargs)
+          
+          echo "**Current Status:**" >> $GITHUB_STEP_SUMMARY
+          echo "- 📋 Non-Dependabot PRs: $NON_DEPENDABOT" >> $GITHUB_STEP_SUMMARY
+          echo "- 🤖 Dependabot PRs: $DEPENDABOT" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔄 Auto-merge enabled: $AUTOMERGE" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$AUTOMERGE" = "true" ] && [ "$NON_DEPENDABOT" -gt 0 ]; then
+            echo "⚠️ **Action Needed:** Auto-merge is enabled but non-Dependabot PRs are active" >> $GITHUB_STEP_SUMMARY
+          elif [ "$AUTOMERGE" = "false" ] && [ "$NON_DEPENDABOT" -eq 0 ] && [ "$DEPENDABOT" -gt 0 ]; then
+            echo "🚀 **Action Needed:** Auto-merge should be enabled for waiting Dependabot PRs" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ **Status:** Dependabot auto-merge is properly configured" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Optional: Notify on status changes
+  notify-status-change:
+    name: Notify Status Change
+    runs-on: ubuntu-latest
+    needs: manage-dependabot
+    if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'closed')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if this affects Dependabot management
+        run: |
+          if [ "${{ github.actor }}" = "dependabot[bot]" ]; then
+            echo "📦 Dependabot PR ${{ github.event.action }}"
+          else
+            echo "👨‍💻 Regular PR ${{ github.event.action }} - may affect Dependabot auto-merge"
+            
+            # Add comment to PR about Dependabot implications
+            if [ "${{ github.event.action }}" = "opened" ]; then
+              gh pr comment ${{ github.event.pull_request.number }} --body "🤖 Dependabot Auto-merge Impact: This PR may temporarily disable Dependabot auto-merge to ensure stable dependency management during feature development. Dependabot PRs will wait until this PR is resolved and will be batched after this PR merges."
+            fi
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
