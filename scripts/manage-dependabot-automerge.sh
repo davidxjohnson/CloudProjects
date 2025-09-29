@@ -9,7 +9,7 @@ set -e
 REPO_OWNER="davidxjohnson"
 REPO_NAME="CloudProjects"
 WORKFLOW_FILE=".github/workflows/ci.yml"
-TEMP_BRANCH="temp/dependabot-automerge-$(date +%s)"
+TEMP_BRANCH="temp-dependabot-automerge-$(date +%s)"
 
 # Dependabot waiting threshold (7 days)
 DEPENDABOT_WAITING_THRESHOLD_DAYS=7
