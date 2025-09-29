@@ -39,6 +39,10 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
+    ignore:
+      # Keep commander at v13.x to maintain Node.js 18 compatibility
+      - dependency-name: "commander"
+        versions: [">=14.0.0"]
 
   # Individual packages only if they have unique dependencies
   - package-ecosystem: "npm" 
