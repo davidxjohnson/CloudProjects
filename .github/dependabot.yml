@@ -43,6 +43,13 @@ updates:
       # Keep commander at v13.x to maintain Node.js 18 compatibility
       - dependency-name: "commander"
         versions: [">=14.0.0"]
+      # Keep vitest at v2.x to avoid engine compatibility issues
+      - dependency-name: "vitest"
+        versions: [">=3.0.0"]
+      - dependency-name: "@vitest/coverage-v8"
+        versions: [">=3.0.0"]
+      - dependency-name: "@vitest/ui"
+        versions: [">=3.0.0"]
 
   # Individual packages only if they have unique dependencies
   - package-ecosystem: "npm" 
