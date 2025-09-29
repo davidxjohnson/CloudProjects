@@ -62,10 +62,14 @@ jobs:
 
       - name: Run Dependabot Management
         run: |
-          case "${{ inputs.action || 'auto' }}" in
+          case "auto" in
             "auto")
               echo "🤖 Running automatic Dependabot management"
-              ./scripts/manage-dependabot-automerge.sh
+              echo "ℹ️  Note: This is a monitoring-only mode"
+              echo "ℹ️  For actual auto-merge control, use manual commands:"
+              echo "   ./scripts/dependabot-helper disable"
+              echo "   ./scripts/dependabot-helper enable" 
+              ./scripts/manage-dependabot-automerge.sh --status
               ;;
             "force-disable")
               echo "🛑 Force disabling Dependabot auto-merge"

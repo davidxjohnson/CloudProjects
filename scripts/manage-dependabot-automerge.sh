@@ -10,6 +10,7 @@ REPO_OWNER="davidxjohnson"
 REPO_NAME="CloudProjects"
 WORKFLOW_FILE=".github/workflows/ci.yml"
 TEMP_BRANCH="temp-dependabot-automerge-$(date +%s)"
+FLAG_FILE=".dependabot-disabled"
 
 # Dependabot waiting threshold (7 days)
 DEPENDABOT_WAITING_THRESHOLD_DAYS=7
