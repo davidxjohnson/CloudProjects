@@ -124,18 +124,7 @@ jobs:
             
             # Add comment to PR about Dependabot implications
             if [ "${{ github.event.action }}" = "opened" ]; then
-              gh pr comment ${{ github.event.pull_request.number }} --body "🤖 **Dependabot Auto-merge Impact**
-
-This PR may temporarily disable Dependabot auto-merge to ensure stable dependency management during feature development.
-
-**What this means:**
-- Dependabot PRs will wait until this PR is resolved
-- All dependency updates will be batched after this PR merges
-- This ensures no conflicts between feature work and dependency updates
-
-**Automatic Management:**
-- Auto-merge will be disabled if not already
-- Will be re-enabled automatically when this PR is merged/closed"
+              gh pr comment ${{ github.event.pull_request.number }} --body "🤖 Dependabot Auto-merge Impact: This PR may temporarily disable Dependabot auto-merge to ensure stable dependency management during feature development. Dependabot PRs will wait until this PR is resolved and will be batched after this PR merges."
             fi
           fi
         env:
