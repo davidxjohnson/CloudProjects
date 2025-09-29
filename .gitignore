@@ -110,3 +110,6 @@ cdk.context.json
 # TypeScript monorepo
 .rush/
 .pnp.*
+# Ignore binary authenticator files
+aws-iam-authenticator*
+aws eks describe-cluster --name EksClusterFAB68BDB-7cd9e8dc689c4f238cbc95330a543164 --region us-east-2 --queryiam-authenticator
