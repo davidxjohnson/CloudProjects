@@ -21,7 +21,7 @@
     "commander": "13.1.0"
   },
   "devDependencies": {
-    "@types/node": "24.5.2",
+    "@types/node": "24.6.0",
     "@vitest/coverage-v8": "2.1.9",
     "typescript": "5.9.2",
     "vitest": "2.1.9"
