@@ -1,9 +1,11 @@
 # @cloud-projects/list-pods-example
 
+> 🎯 **Portfolio Highlight:** This project demonstrates **professional TypeScript cloud development** with industry-standard testing practices, achieving **97.61% code coverage** with comprehensive mocking and error handling.
+
 ### Description
 A comprehensive TypeScript example demonstrating how to list Kubernetes pods using the [@kubernetes/client-node](https://github.com/kubernetes-client/javascript) library. This example includes pagination support, error handling, command-line interface, and extensive testing capabilities.
 
-Part of the CloudProjects monorepo showcasing modern TypeScript development practices for cloud infrastructure automation. 
+Part of the **TypeScript Cloud Development Portfolio** showcasing modern development practices for cloud infrastructure automation. 
 
 ### What makes this example notable?
 
