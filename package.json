@@ -1,7 +1,7 @@
 {
   "name": "cloud-projects",
   "version": "1.0.0",
-  "description": "TypeScript monorepo containing AWS CDK projects and AWS SDK examples",
+  "description": "Professional TypeScript cloud development portfolio showcasing AWS CDK infrastructure, DevOps automation, and production-ready code patterns",
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r build",
@@ -16,7 +16,14 @@
     "typescript",
     "kubernetes",
     "infrastructure",
-    "examples"
+    "devops",
+    "cloud-engineering",
+    "automation",
+    "portfolio",
+    "senior-developer",
+    "aws-sdk",
+    "testing",
+    "ci-cd"
   ],
   "author": "David Johnson",
   "license": "ISC",
