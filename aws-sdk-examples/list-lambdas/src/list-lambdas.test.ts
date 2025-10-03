@@ -65,7 +65,7 @@ describe('List Lambdas CLI', () => {
 
             const options = parseCommandLineOptions(argv)
 
-            expect(options.region).toBe('us-east-1')
+            expect(options.region).toBe('us-east-2')
             expect(options.pagesize).toBe(50)
         })
 
@@ -166,7 +166,7 @@ describe('List Lambdas CLI', () => {
 
             // Verify default values were used
             expect(mockListLambdas).toHaveBeenCalledWith({
-                region: 'us-east-1',
+                region: 'us-east-2',
                 pagesize: 50
             })
 
