@@ -1,237 +1,63 @@
-# TypeScript Cloud Development Portfolio
+# TypeScript Cloud Projects
 
 [![CI/CD Pipeline](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml)
 [![PR Validation](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml)
 [![codecov](https://codecov.io/gh/davidxjohnson/CloudProjects/branch/main/graph/badge.svg)](https://codecov.io/gh/davidxjohnson/CloudProjects)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Professional TypeScript cloud development showcasing modern DevOps practices, infrastructure as code, and production-ready automation tools.**
+Modern TypeScript cloud development demonstrating AWS infrastructure, DevOps automation, and production-ready testing practices.
 
-> 🎯 **Target Audience:** DevOps Engineers, Cloud Architects, and Senior Developers working with TypeScript in cloud environments.
+## **case-studies/**
 
-## 🔥 **What You'll Find Here**
+Real-world development case studies and lessons learned.
 
-### **Infrastructure as Code**
-- **AWS CDK Projects** - Production-ready infrastructure deployments
-- **Kubernetes Integration** - EKS clusters with proper RBAC and networking
-- **Multi-environment Support** - Scalable patterns for dev/staging/prod
+- **[`testability-refactor.md`](case-studies/testability-refactor.md)** - Code quality improvement case study demonstrating refactoring patterns for enhanced testability and maintainability.
 
-### **Cloud Automation & APIs** 
-- **AWS SDK Best Practices** - Type-safe, testable cloud integrations
-- **CLI Tools** - Professional command-line interfaces with comprehensive help
-- **Separation of Concerns** - Clean architecture patterns for maintainable code
+## **aws-cdk-examples/**
 
-### **DevOps Excellence**
-- **97.61% Test Coverage** - Comprehensive testing with mocks and integration tests
-- **Professional CI/CD** - Automated pipelines with security scanning and quality gates
-- **Branch Protection Workflow** - Enterprise-grade development practices
+Infrastructure as Code projects using AWS CDK with TypeScript.
 
-## � **Project Structure**
+- **[`eks/`](aws-cdk-examples/eks)** - Complete EKS cluster deployment with Kubernetes 1.33, AL2023 AMI support, and proper IAM configuration. Demonstrates production-ready container orchestration setup.
 
-```
-typescript-cloud-projects/
-├── 🏗️  aws-cdk-examples/          # Infrastructure as Code
-│   └── eks/                      # Production EKS cluster deployment
-├── ☁️  aws-sdk-examples/          # Cloud Service Integration  
-│   ├── list-pods/               # Kubernetes API with 97.61% test coverage
-│   └── list-lambdas/            # AWS Lambda management tools
-├── 📚  docs/                     # Technical Documentation
-│   ├── REFACTORING_FOR_TESTABILITY_OVERVIEW.md  # Code quality case study
-│   ├── EKS_AUTHENTICATION_GUIDE.md              # Production K8s setup
-│   └── DEPENDENCY_MANAGEMENT_TUTORIAL.md        # Monorepo best practices
-├── 🔧  scripts/                  # DevOps Automation
-│   ├── pr-workflow.sh           # Professional development workflow
-│   ├── validate-local.sh        # Pre-commit quality checks
-│   └── manage-dependabot-automerge.sh  # Dependency automation
-└── 🛡️  .github/                  # CI/CD & Quality Assurance
-    ├── workflows/               # GitHub Actions pipelines
-    ├── CODEOWNERS              # Team responsibility matrix
-    └── pull_request_template.md # Standardized PR process
-```
+- **[`lambda/`](aws-cdk-examples/lambda)** - Serverless function deployment with API Gateway integration. Includes three Lambda functions showcasing different patterns: HTTP endpoints, data processing, and monitoring.
 
-## 🎯 **Featured Projects**
+## **aws-sdk-examples/**
 
-### **🏗️ Production EKS Cluster** (`aws-cdk-examples/eks/`)
-**What it demonstrates:** Complex infrastructure deployment with AWS CDK
-- Multi-AZ EKS cluster with managed node groups
-- IAM roles and policies for secure access
-- VPC networking with proper security groups
-- One-command deployment: `pnpm deploy`
+Cloud service integration using AWS SDK v3 with comprehensive testing.
 
-### **☁️ Kubernetes Pod Management** (`aws-sdk-examples/list-pods/`)
-**What it demonstrates:** Professional TypeScript architecture and testing
-- Clean separation of concerns (CLI ↔ Business Logic ↔ Infrastructure)
-- 97.61% test coverage with comprehensive mocking
-- Dependency injection for testability
-- Production-ready error handling and pagination
+- **[`list-lambdas/`](aws-sdk-examples/list-lambdas)** - Command-line tool for managing Lambda functions with 95.65% test coverage. Features pagination, error handling, and professional CLI interface using Commander.js.
 
-### **📚 Refactoring Case Study** (`docs/REFACTORING_FOR_TESTABILITY_OVERVIEW.md`)
-**What it demonstrates:** Senior-level code architecture and mentoring capability
-- Before/after code comparison with detailed annotations
-- Explanation of separation of concerns principles
-- Testing strategy transformation
-- Technical leadership and knowledge transfer skills
+- **[`list-pods/`](aws-sdk-examples/list-pods)** - Kubernetes API integration for pod management with 97.61% test coverage. Demonstrates cloud-native application patterns and robust testing strategies.
 
-## 💼 **Professional Impact**
+## **scripts/**
 
-This repository demonstrates **5+ years of AWS experience** applied to modern TypeScript development:
+DevOps automation and workflow management tools.
 
-### **DevOps Leadership**
-- **Branch Protection & PR Workflows** - Enterprise development practices
-- **Automated Quality Gates** - CI/CD with testing, security scanning, coverage thresholds  
-- **Dependency Management** - Automated updates with safety checks via Dependabot
+- **[`create-feature-branch.sh`](scripts/create-feature-branch.sh)** - Automated feature branch creation with validation
+- **[`pr-workflow.sh`](scripts/pr-workflow.sh)** - Pull request workflow automation with CI/CD integration  
+- **[`validate-local.sh`](scripts/validate-local.sh)** - Pre-commit validation and quality checks
+- **[`manage-dependabot-automerge.sh`](scripts/manage-dependabot-automerge.sh)** - Automated dependency management
+- **[`dependabot-helper`](scripts/dependabot-helper)** - Dependabot configuration utilities
 
-### **Cloud Architecture**
-- **Infrastructure as Code** - CDK for repeatable, version-controlled deployments
-- **Container Orchestration** - EKS with proper IAM, networking, and security
-- **API Integration** - AWS SDK usage following cloud-native patterns
+## **.github/**
 
-### **Code Quality & Mentoring**
-- **Testing Excellence** - 97.61% coverage demonstrates commitment to reliability
-- **Architecture Documentation** - Detailed case studies for knowledge transfer
-- **Clean Code Patterns** - Separation of concerns, dependency injection, error handling
+CI/CD pipeline configuration and repository automation.
 
-> 💡 **For Hiring Managers:** This work represents the kind of maintainable, tested, documented code that scales from prototypes to production systems.
+- **[`workflows/`](.github/workflows)** - GitHub Actions for automated testing, security scanning, and deployment
+- **[`dependabot.yml`](.github/dependabot.yml)** - Automated dependency updates with security monitoring
+- **[`CODEOWNERS`](.github/CODEOWNERS)** - Code review automation and ownership management
+- **[Pull request templates](.github/PULL_REQUEST_TEMPLATE)** - Standardized PR process with quality gates
 
-**Professional TypeScript cloud development showcasing modern DevOps practices, infrastructure as code, and production-ready automation tools.**
+## **docs/**
 
-> 🎯 **Target Audience:** DevOps Engineers, Cloud Architects, and Senior Developers working with TypeScript in cloud environments.
+Technical documentation and development guides.
 
-## 🔥 **What You'll Find Here**
-
-### **Infrastructure as Code**
-- **AWS CDK Projects** - Production-ready infrastructure deployments
-- **Kubernetes Integration** - EKS clusters with proper RBAC and networking
-- **Multi-environment Support** - Scalable patterns for dev/staging/prod
-
-### **Cloud Automation & APIs** 
-- **AWS SDK Best Practices** - Type-safe, testable cloud integrations
-- **CLI Tools** - Professional command-line interfaces with comprehensive help
-- **Separation of Concerns** - Clean architecture patterns for maintainable code
-
-### **DevOps Excellence**
-- **97.61% Test Coverage** - Comprehensive testing with mocks and integration tests
-- **Professional CI/CD** - Automated pipelines with security scanning and quality gates
-- **Branch Protection Workflow** - Enterprise-grade development practices
-
-## � **Project Structure**
-
-```
-typescript-cloud-projects/
-├── 🏗️  aws-cdk-examples/          # Infrastructure as Code
-│   └── eks/                      # Production EKS cluster deployment
-├── ☁️  aws-sdk-examples/          # Cloud Service Integration  
-│   ├── list-pods/               # Kubernetes API with 97.61% test coverage
-│   └── list-lambdas/            # AWS Lambda management tools
-├── 📚  docs/                     # Technical Documentation
-│   ├── REFACTORING_FOR_TESTABILITY_OVERVIEW.md  # Code quality case study
-│   ├── EKS_AUTHENTICATION_GUIDE.md              # Production K8s setup
-│   └── DEPENDENCY_MANAGEMENT_TUTORIAL.md        # Monorepo best practices
-├── 🔧  scripts/                  # DevOps Automation
-│   ├── pr-workflow.sh           # Professional development workflow
-│   ├── validate-local.sh        # Pre-commit quality checks
-│   └── manage-dependabot-automerge.sh  # Dependency automation
-└── 🛡️  .github/                  # CI/CD & Quality Assurance
-    ├── workflows/               # GitHub Actions pipelines
-    ├── CODEOWNERS              # Team responsibility matrix
-    └── pull_request_template.md # Standardized PR process
-```
-
-## 🎯 **Featured Projects**
-
-### **🏗️ Production EKS Cluster** (`aws-cdk-examples/eks/`)
-**What it demonstrates:** Complex infrastructure deployment with AWS CDK
-- Multi-AZ EKS cluster with managed node groups
-- IAM roles and policies for secure access
-- VPC networking with proper security groups
-- One-command deployment: `pnpm deploy`
-
-### **☁️ Kubernetes Pod Management** (`aws-sdk-examples/list-pods/`)
-**What it demonstrates:** Professional TypeScript architecture and testing
-- Clean separation of concerns (CLI ↔ Business Logic ↔ Infrastructure)
-- 97.61% test coverage with comprehensive mocking
-- Dependency injection for testability
-- Production-ready error handling and pagination
-
-### **📚 Refactoring Case Study** (`docs/REFACTORING_FOR_TESTABILITY_OVERVIEW.md`)
-**What it demonstrates:** Senior-level code architecture and mentoring capability
-- Before/after code comparison with detailed annotations
-- Explanation of separation of concerns principles
-- Testing strategy transformation
-- Technical leadership and knowledge transfer skills
-
-## 💼 **Professional Impact**
-
-This repository demonstrates **5+ years of AWS experience** applied to modern TypeScript development:
-
-### **DevOps Leadership**
-- **Branch Protection & PR Workflows** - Enterprise development practices
-- **Automated Quality Gates** - CI/CD with testing, security scanning, coverage thresholds  
-- **Dependency Management** - Automated updates with safety checks via Dependabot
-
-### **Cloud Architecture**
-- **Infrastructure as Code** - CDK for repeatable, version-controlled deployments
-- **Container Orchestration** - EKS with proper IAM, networking, and security
-- **API Integration** - AWS SDK usage following cloud-native patterns
-
-### **Code Quality & Mentoring**
-- **Testing Excellence** - 97.61% coverage demonstrates commitment to reliability
-- **Architecture Documentation** - Detailed case studies for knowledge transfer
-- **Clean Code Patterns** - Separation of concerns, dependency injection, error handling
-
-> 💡 **For Hiring Managers:** This work represents the kind of maintainable, tested, documented code that scales from prototypes to production systems.
-
-> **Documentation:** [Technical Overview](docs/TECHNICAL_OVERVIEW.md) | [Developer Guide](docs/DEVELOPER_GUIDE.md)
-
-## **Project Goals**
-
-This monorepo demonstrates:
-- **TypeScript Development**: Strict typing with ES modules and modern standards
-- **Monorepo Management**: Efficient workspace organization with pnpm
-- **AWS Infrastructure as Code**: Real-world AWS infrastructure deployments using CDK
-- **AWS SDK Best Practices**: Well-structured, type-safe AWS SDK usage examples
-- **Professional Testing**: Comprehensive test suites with 90%+ code coverage (with mocks)
-- **Modern CI/CD**: Automated testing, security scanning, and quality gates
-
-## **What You'll Find Here**
-
-### ☸️ **Production EKS Cluster** [`aws-cdk-examples/eks/`]
-Complex infrastructure deployment with AWS CDK - Multi-AZ cluster, IAM policies, VPC networking, one-command deployment
-
-### ☸️ **Kubernetes Pod Management** [`aws-sdk-examples/list-pods/`]  
-Professional TypeScript architecture (using K8S SDK) with 97.61% test coverage - Clean separation of concerns, dependency injection, comprehensive mocking
-
-### ⚡ **Lambda Function Management** [`aws-sdk-examples/list-lambdas/`]
-AWS Lambda management with TypeScript - List and manage Lambda functions using AWS SDK best practices with comprehensive error handling, high code coverage with use of Mock.
-
-### 🔄 **Refactoring Case Study** [`docs/REFACTORING_FOR_TESTABILITY_OVERVIEW.md`]
-Senior-level mentoring documentation - Before/after comparisons, testing strategy transformation, technical leadership
-
-###  🚀 **DevOps Automation** [`scripts/`]
-Professional CI/CD pipelines and workflow scripts - Branch protection, PR workflows, automated validation, dependency management
+- **[`TECHNICAL_OVERVIEW.md`](docs/TECHNICAL_OVERVIEW.md)** - Architecture decisions and system design patterns
+- **[`DEVELOPER_GUIDE.md`](docs/DEVELOPER_GUIDE.md)** - Setup instructions and development workflows  
+- **[`EKS_AUTHENTICATION_GUIDE.md`](docs/EKS_AUTHENTICATION_GUIDE.md)** - Production Kubernetes cluster configuration
+- **[`DEPENDENCY_MANAGEMENT_TUTORIAL.md`](docs/DEPENDENCY_MANAGEMENT_TUTORIAL.md)** - Monorepo dependency strategies
+- **[`Additional guides`](docs/)** - Dependabot management, Node.js compatibility, GitHub CLI usage, and validation checklists
 
 ---
 
-**Documentation:** See [Technical Overview](docs/TECHNICAL_OVERVIEW.md) for detailed project analysis or [Developer Guide](docs/DEVELOPER_GUIDE.md) for setup and development workflow.
-
-## **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-### Terms of Use
-The code in this repository can be used without restriction or warranty, designed to help developers learn by example.
-
-## 🗺️ **Portfolio Roadmap**
-
-This TypeScript repository is part of a larger **multi-language cloud development portfolio**:
-
-### **Coming Soon**
-- **Go DevOps Tools** - High-performance CLI utilities and Kubernetes operators
-- **Java Enterprise Services** - Spring Boot microservices and enterprise integrations  
-- **Python Automation** - AWS automation scripts and infrastructure tooling
-
-### **Portfolio Hub**
-- **GitHub Pages Site** - Professional landing page organizing all language-specific repositories
-- **Case Studies** - Real-world transformation stories from DevOps leadership experience
-- **Certifications & Resume** - Comprehensive professional credentials showcase
-
-> 🎯 **Vision:** Demonstrate full-stack cloud engineering capabilities across multiple languages and use cases, positioned for **Cloud Engineer**, **Senior DevOps Engineer**, and **DevOps Manager** roles at enterprise organizations.
+**Key Features:** Production-ready code patterns • Comprehensive testing (95%+ coverage) • Modern DevOps practices • Enterprise-grade automation

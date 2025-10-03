@@ -1,0 +1,81 @@
+# TypeScript Cloud Development Portfolio
+
+[![CI/CD Pipeline](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml)
+[![PR Validation](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml)
+[![codecov](https://codecov.io/gh/davidxjohnson/CloudProjects/branch/main/graph/badge.svg)](https://codecov.io/gh/davidxjohnson/CloudProjects)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+**Professional TypeScript cloud development showcasing modern DevOps practices, infrastructure as code, and production-ready automation tools.**
+
+> 🎯 **Target Audience:** DevOps Engineers, Cloud Architects, and Senior Developers working with TypeScript in cloud environments.
+
+## 🔥 **What You'll Find Here**
+
+### **Infrastructure as Code**
+- **AWS CDK Projects** - Production-ready infrastructure deployments - EKS cluster, Lambda deploys.
+- **Multi-environment Support** - Scalable patterns for dev/staging/prod
+
+### **Cloud Automation & APIs** 
+- **AWS SDK Best Practices** - Type-safe, testable cloud integrations
+- **CLI Tools** - Professional command-line interfaces with comprehensive help
+- **Separation of Concerns** - Clean architecture patterns for maintainable code
+
+### **DevOps Excellence**
+- **97.61% Test Coverage** - Comprehensive testing with mocks and integration tests
+- **Professional CI/CD** - Automated pipelines with security scanning and quality gates
+- **Branch Protection Workflow** - Enterprise-grade development practices
+
+## � **Project Structure**
+
+``` bash
+typescript-cloud-projects/
+├── 🏗️  aws-cdk-examples/                       # Infrastructure as Code
+│   └── eks/                                    # Production EKS cluster deployment
+├── ☁️  aws-sdk-examples/                       # Cloud Service Integration  
+│   ├── list-pods/                              # Kubernetes API with 97.61% test coverage
+│   └── list-lambdas/                           # AWS Lambda management tools
+├── 📚  docs/                                   # Technical Documentation
+│   ├── REFACTORING_FOR_TESTABILITY_OVERVIEW.md # Code quality case study
+│   ├── EKS_AUTHENTICATION_GUIDE.md             # Production K8s setup
+│   └── DEPENDENCY_MANAGEMENT_TUTORIAL.md       # Monorepo best practices
+├── 🔧  scripts/                                # DevOps Automation
+│   ├── pr-workflow.sh                          # Professional development workflow
+│   ├── validate-local.sh                       # Pre-commit quality checks
+│   └── manage-dependabot-automerge.sh          # Dependency automation
+└── 🛡️  .github/                                # CI/CD & Quality Assurance
+    ├── workflows/                              # GitHub Actions pipelines
+    ├── CODEOWNERS                              # Team responsibility matrix
+    └── pull_request_template.md                # Standardized PR process
+```
+
+## 🎯 **Featured Projects**
+
+### **🏗️ Production EKS Cluster** (`aws-cdk-examples/eks/`)
+**What it demonstrates:** Complex infrastructure deployment with AWS CDK
+- Multi-AZ EKS cluster with managed node groups
+- IAM roles and policies for secure access
+- VPC networking with proper security groups
+- One-command deployment: `pnpm deploy`
+
+### **☁️ Kubernetes Pod Management** (`aws-sdk-examples/list-pods/`)
+**What it demonstrates:** Professional TypeScript architecture and testing
+- Clean separation of concerns (CLI ↔ Business Logic ↔ Infrastructure)
+- 97.61% test coverage with comprehensive mocking
+- Dependency injection for testability
+- Production-ready error handling and pagination
+
+### **📚 Refactoring Case Study** (`docs/REFACTORING_FOR_TESTABILITY_OVERVIEW.md`)
+**What it demonstrates:** Senior-level code architecture and mentoring capability
+- Before/after code comparison with detailed annotations
+- Explanation of separation of concerns principles
+- Testing strategy transformation
+- Technical leadership and knowledge transfer skills
+
+**Documentation:** See [Technical Overview](docs/TECHNICAL_OVERVIEW.md) for detailed project analysis or [Developer Guide](docs/DEVELOPER_GUIDE.md) for setup and development workflow.
+
+## **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Terms of Use
+The code in this repository can be used without restriction or warranty, designed to help developers learn by example.
+
