@@ -5,7 +5,6 @@
 [![codecov](https://codecov.io/gh/davidxjohnson/CloudProjects/branch/main/graph/badge.svg)](https://codecov.io/gh/davidxjohnson/CloudProjects)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<<<<<<< HEAD
 **Professional TypeScript cloud development showcasing modern DevOps practices, infrastructure as code, and production-ready automation tools.**
 
 > 🎯 **Target Audience:** DevOps Engineers, Cloud Architects, and Senior Developers working with TypeScript in cloud environments.
