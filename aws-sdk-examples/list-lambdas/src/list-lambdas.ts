@@ -9,7 +9,7 @@ import { LambdaListOptions } from './lambda-lister.js';
 export function parseCommandLineOptions(argv: string[] = process.argv): LambdaListOptions {
     const flag: Command = new Command()
     flag
-        .addOption(new Option('-r --region <string>', 'The aws region name to use. (required)').default('us-east-1'))
+        .addOption(new Option('-r --region <string>', 'The aws region name to use. (required)').default('us-east-2'))
         .addOption(new Option('-p --pagesize <number>', 'Number of items per page.').default(50))
         .showHelpAfterError()
         .parse(argv);
