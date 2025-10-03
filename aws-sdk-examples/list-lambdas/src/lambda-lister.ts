@@ -17,7 +17,7 @@ export class LambdaLister {
             this.lambdaClient = customClient
         } else {
             // Initialize new client with region
-            this.lambdaClient = new LambdaClient({ region: region || 'us-east-1' })
+            this.lambdaClient = new LambdaClient({ region: region || 'us-east-2' })
         }
     }
 

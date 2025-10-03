@@ -1,0 +1,27 @@
+{
+    "name": "@cloud-projects/lambda",
+    "version": "1.0.0",
+    "description": "AWS Lambda functions deployment using AWS CDK",
+    "main": "lib/index.js",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.19.1"
+    },
+    "scripts": {
+        "build": "tsc",
+        "synth": "cdk synth",
+        "deploy": "cdk deploy",
+        "diff": "cdk diff",
+        "destroy": "cdk destroy",
+        "cdk": "cdk"
+    },
+    "dependencies": {
+        "aws-cdk-lib": "2.218.0",
+        "constructs": "10.4.2"
+    },
+    "devDependencies": {
+        "typescript": "5.9.2",
+        "@types/node": "^18.19.0",
+        "@types/aws-lambda": "^8.10.134"
+    }
+}

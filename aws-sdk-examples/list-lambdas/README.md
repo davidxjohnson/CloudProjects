@@ -47,7 +47,7 @@ pnpm start
 node dist/list-lambdas.js --help
 
 Options:
-  -r, --region <string>     The AWS region name to use (default: "us-east-1")
+  -r, --region <string>     The AWS region name to use (default: "us-east-2")
   -p, --pagesize <number>   Number of items per page (default: 50)
   -h, --help               Display help for command
 ```

@@ -24,7 +24,7 @@ This document summarizes the comprehensive CI/CD pipeline setup for CloudProject
 
 ### 2. Repository Governance
 
-#### **Branch Protection** (`.github/BRANCH_PROTECTION.md`)
+#### **Branch Protection** (configured in GitHub)
 - **Required status checks** before merge
 - **Code review requirements** (minimum 1 approval)
 - **Up-to-date branch enforcement**
@@ -68,9 +68,7 @@ This document summarizes the comprehensive CI/CD pipeline setup for CloudProject
 
 ### Governance
 - `.github/CODEOWNERS` - Code review assignments
-- `.github/BRANCH_PROTECTION.md` - Branch protection documentation
 - `.github/pull_request_template.md` - PR template
-- `.github/CONTRIBUTING.md` - Comprehensive contributor guide
 
 ### Utilities
 - `scripts/validate-local.sh` - Local validation script

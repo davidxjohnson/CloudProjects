@@ -38,7 +38,7 @@ describe('LambdaLister', () => {
             const lister = new LambdaLister()
 
             expect(lister).toBeInstanceOf(LambdaLister)
-            expect(LambdaModule.LambdaClient).toHaveBeenCalledWith({ region: 'us-east-1' })
+            expect(LambdaModule.LambdaClient).toHaveBeenCalledWith({ region: 'us-east-2' })
         })
 
         it('should accept a custom region', () => {
@@ -78,7 +78,7 @@ describe('LambdaLister', () => {
             vi.mocked(LambdaModule.paginateListFunctions).mockReturnValue(mockPaginator as any)
 
             const options: LambdaListOptions = {
-                region: 'us-east-1',
+                region: 'us-east-2',
                 pagesize: 10
             }
 
@@ -140,7 +140,7 @@ describe('LambdaLister', () => {
             vi.mocked(LambdaModule.paginateListFunctions).mockReturnValue(mockPaginator as any)
 
             const options: LambdaListOptions = {
-                region: 'us-east-1',
+                region: 'us-east-2',
                 pagesize: 10
             }
 
@@ -162,7 +162,7 @@ describe('LambdaLister', () => {
             vi.mocked(LambdaModule.paginateListFunctions).mockReturnValue(mockPaginator as any)
 
             const options: LambdaListOptions = {
-                region: 'us-east-1',
+                region: 'us-east-2',
                 pagesize: 10
             }
 
