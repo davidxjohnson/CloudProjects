@@ -1,0 +1,9 @@
+{
+    "app": "node lib/index.js",
+    "context": {
+        "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+        "@aws-cdk/core:checkSecretUsage": true,
+        "@aws-cdk/core:target": "aws-cdk-lib",
+        "@aws-cdk-v2/aws-lambda:recognizeLayerVersion": true
+    }
+}
