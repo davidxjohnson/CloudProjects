@@ -62,7 +62,7 @@ pnpm synth
 After deployment, use the API URL from the stack outputs:
 ```bash
 # Example with actual deployed URL (replace with your output):
-curl https://t10yvngdxc.execute-api.us-east-2.amazonaws.com/prod/
+
 curl "https://t10yvngdxc.execute-api.us-east-2.amazonaws.com/prod/hello?name=Developer"
 
 # Expected responses:
