@@ -7,12 +7,6 @@
 
 Modern TypeScript cloud development demonstrating AWS infrastructure, DevOps automation, and production-ready testing practices.
 
-## **case-studies/**
-
-Real-world development case studies and lessons learned.
-
-- **[`testability-refactor.md`](case-studies/testability-refactor.md)** - Code quality improvement case study demonstrating refactoring patterns for enhanced testability and maintainability.
-
 ## **aws-cdk-examples/**
 
 Infrastructure as Code projects using AWS CDK with TypeScript.
