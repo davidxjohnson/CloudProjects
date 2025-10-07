@@ -1,5 +1,5 @@
 {
-    "app": "node lib/index.js",
+    "app": "node lib/simple-k8s.js",
     "context": {
         "instanceType": "t3.large",
         "maxAzs": 2
