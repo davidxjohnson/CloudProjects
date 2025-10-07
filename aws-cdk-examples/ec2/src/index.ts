@@ -156,7 +156,36 @@ export class Ec2Stack extends Stack {
 
             // Create setup scripts directory
             'mkdir -p /home/ec2-user/k8s-setup',
-            'chown ec2-user:ec2-user /home/ec2-user/k8s-setup'
+            'chown ec2-user:ec2-user /home/ec2-user/k8s-setup',
+
+            // Create Weave network installation script
+            'cat > /home/ec2-user/k8s-setup/install-weave.sh << "EOF"',
+            '#!/bin/bash',
+            'echo "Installing Weave network for Kubernetes v1.28..."',
+            'kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.28/net.yaml',
+            'echo "Waiting for Weave pods to be ready..."',
+            'kubectl wait --for=condition=Ready pod -l name=weave-net -n kube-system --timeout=300s',
+            'echo "Weave network installation completed!"',
+            'EOF',
+            'chmod +x /home/ec2-user/k8s-setup/install-weave.sh',
+            'chown ec2-user:ec2-user /home/ec2-user/k8s-setup/install-weave.sh',
+
+            // Create cluster initialization script for control plane
+            'cat > /home/ec2-user/k8s-setup/init-cluster.sh << "EOF"',
+            '#!/bin/bash',
+            'echo "Initializing Kubernetes control plane..."',
+            'sudo kubeadm init --pod-network-cidr=10.244.0.0/16',
+            'echo "Setting up kubectl for ec2-user..."',
+            'mkdir -p $HOME/.kube',
+            'sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config',
+            'sudo chown $(id -u):$(id -g) $HOME/.kube/config',
+            'echo "Installing Weave network..."',
+            './install-weave.sh',
+            'echo "Cluster initialization completed!"',
+            'echo "Use the join command displayed above to add worker nodes."',
+            'EOF',
+            'chmod +x /home/ec2-user/k8s-setup/init-cluster.sh',
+            'chown ec2-user:ec2-user /home/ec2-user/k8s-setup/init-cluster.sh'
         );
 
         // Create Kubernetes Control Plane instance
