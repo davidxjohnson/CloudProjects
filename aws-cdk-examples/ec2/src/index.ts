@@ -188,19 +188,19 @@ export class Ec2Stack extends Stack {
         workerInstance.node.addMetadata('Role', 'WorkerNode');
 
         // VPC Endpoints for Session Manager in private subnets
-        const ssmEndpoint = new InterfaceVpcEndpoint(this, 'SSMEndpoint', {
+        new InterfaceVpcEndpoint(this, 'SSMEndpoint', {
             vpc,
             service: InterfaceVpcEndpointAwsService.SSM,
             subnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
         });
 
-        const ssmMessagesEndpoint = new InterfaceVpcEndpoint(this, 'SSMMessagesEndpoint', {
+        new InterfaceVpcEndpoint(this, 'SSMMessagesEndpoint', {
             vpc,
             service: InterfaceVpcEndpointAwsService.SSM_MESSAGES,
             subnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
         });
 
-        const ec2MessagesEndpoint = new InterfaceVpcEndpoint(this, 'EC2MessagesEndpoint', {
+        new InterfaceVpcEndpoint(this, 'EC2MessagesEndpoint', {
             vpc,
             service: InterfaceVpcEndpointAwsService.EC2_MESSAGES,
             subnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },

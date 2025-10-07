@@ -9,6 +9,7 @@
     },
     "scripts": {
         "build": "pnpm tsc",
+        "test": "echo \"No tests yet\" && exit 0",
         "synth": "pnpm cdk synth",
         "deploy": "pnpm cdk deploy",
         "diff": "pnpm cdk diff",
@@ -20,6 +21,6 @@
         "constructs": "10.4.2"
     },
     "devDependencies": {
-        "typescript": "5.9.2"
+        "typescript": "5.9.3"
     }
 }
