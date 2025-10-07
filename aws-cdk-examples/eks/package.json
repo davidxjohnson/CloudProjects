@@ -18,10 +18,10 @@
   "dependencies": {
     "@aws-cdk/lambda-layer-kubectl-v32": "2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "2.0.0",
-    "aws-cdk-lib": "2.218.0",
+    "aws-cdk-lib": "2.219.0",
     "constructs": "10.4.2"
   },
   "devDependencies": {
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   }
 }
