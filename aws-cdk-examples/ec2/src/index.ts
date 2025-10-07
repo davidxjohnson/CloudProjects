@@ -99,6 +99,11 @@ export class Ec2Stack extends Stack {
             // Install required packages
             'dnf install -y curl wget iproute-tc',
 
+            // Ensure tc utility is available in system PATH for all users
+            // iproute-tc installs tc to /usr/sbin, ensure it\'s accessible
+            'ln -sf /usr/sbin/tc /usr/bin/tc',
+            'which tc || echo "tc not found in PATH"',
+
             // Install and start SSM agent for Session Manager
             'dnf install -y amazon-ssm-agent',
             'systemctl enable amazon-ssm-agent',
@@ -129,6 +134,11 @@ export class Ec2Stack extends Stack {
             'EOF',
             'dnf install -y kubelet kubeadm kubectl --disableexcludes=kubernetes',
             'systemctl enable kubelet',
+
+            // Ensure networking utilities are in PATH for Kubernetes
+            'echo "export PATH=/usr/sbin:/sbin:$PATH" >> /etc/environment',
+            'echo "export PATH=/usr/sbin:/sbin:$PATH" >> /home/ec2-user/.bashrc',
+            'source /etc/environment',
 
             // Configure system settings for Kubernetes
             'echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf',
