@@ -2,7 +2,6 @@ import { App, Stack, StackProps, Duration, CfnOutput } from 'aws-cdk-lib';
 import { Function, Runtime, Code } from 'aws-cdk-lib/aws-lambda';
 import { RestApi, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
-import { join } from 'path';
 
 /**
  * Lambda Stack with multiple functions for demonstration
