@@ -1,0 +1,26 @@
+{
+    "name": "@cloud-projects/ec2",
+    "version": "1.0.0",
+    "description": "EC2 instances for Kubernetes control plane and worker node deployment using AWS CDK",
+    "main": "lib/index.js",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.19.1"
+    },
+    "scripts": {
+        "build": "pnpm tsc",
+        "test": "echo \"No tests yet\" && exit 0",
+        "synth": "pnpm cdk synth",
+        "deploy": "pnpm cdk deploy",
+        "diff": "pnpm cdk diff",
+        "destroy": "pnpm cdk destroy",
+        "cdk": "cdk"
+    },
+    "dependencies": {
+        "aws-cdk-lib": "2.219.0",
+        "constructs": "10.4.2"
+    },
+    "devDependencies": {
+        "typescript": "5.9.3"
+    }
+}
