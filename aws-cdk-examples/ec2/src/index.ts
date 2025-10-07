@@ -97,7 +97,7 @@ export class Ec2Stack extends Stack {
             'dnf update -y',
 
             // Install required packages
-            'dnf install -y curl wget',
+            'dnf install -y curl wget iproute-tc',
 
             // Install and start SSM agent for Session Manager
             'dnf install -y amazon-ssm-agent',
