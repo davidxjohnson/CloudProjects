@@ -73,6 +73,27 @@ export class SimpleK8sStack extends Stack {
             'Kubernetes API server'
         );
 
+        // CNI-specific ports for networking plugins
+        // Flannel VXLAN backend communication
+        k8sSecurityGroup.addIngressRule(
+            k8sSecurityGroup,
+            Port.udp(8285),
+            'Flannel VXLAN backend'
+        );
+
+        // Weave Net ports (alternative CNI)
+        k8sSecurityGroup.addIngressRule(
+            k8sSecurityGroup,
+            Port.tcp(6783),
+            'Weave Net control plane'
+        );
+
+        k8sSecurityGroup.addIngressRule(
+            k8sSecurityGroup,
+            Port.udp(6784),
+            'Weave Net data plane'
+        );
+
         // User data script - minimal setup for K8s training
         const userData = UserData.forLinux();
         userData.addCommands(
@@ -115,17 +136,86 @@ export class SimpleK8sStack extends Stack {
             'ln -sf /usr/sbin/tc /usr/bin/tc',
             'echo "export PATH=/usr/sbin:/sbin:$PATH" >> /etc/environment',
 
-            // Configure system for K8s
+            // Configure system for K8s with complete kernel module fix
             'echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.conf',
             'echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.conf',
             'echo "net.ipv4.ip_forward = 1" >> /etc/sysctl.conf',
             'sysctl --system',
-            'modprobe br_netfilter',
-            'echo "br_netfilter" >> /etc/modules-load.d/k8s.conf',
+
+            // Load all required kernel modules for CNI networking
+            'modprobe br_netfilter ip_tables iptable_nat iptable_filter',
+
+            // Create permanent kernel module configuration
+            'cat > /etc/modules-load.d/k8s.conf << "EOF"',
+            'br_netfilter',
+            'ip_tables',
+            'iptable_nat',
+            'iptable_filter',
+            'EOF',
+
+            // Create permanent sysctl configuration  
+            'cat > /etc/sysctl.d/k8s.conf << "EOF"',
+            'net.bridge.bridge-nf-call-ip6tables = 1',
+            'net.bridge.bridge-nf-call-iptables = 1',
+            'net.ipv4.ip_forward = 1',
+            'EOF',
 
             // Disable swap
             'swapoff -a',
             'sed -i "/swap/d" /etc/fstab',
+
+            // Configure more tolerant liveness probe settings for control plane stability
+            'mkdir -p /root/k8s-fixes',
+            'cat > /root/k8s-fixes/configure-probes.sh << "EOF"',
+            '#!/bin/bash',
+            '# Wait for kubeadm init to complete and static pod manifests to exist',
+            'while [ ! -f /etc/kubernetes/manifests/etcd.yaml ]; do',
+            '  echo "Waiting for Kubernetes manifests..."',
+            '  sleep 10',
+            'done',
+            'sleep 30  # Additional wait for initial startup',
+            '',
+            '# Make backups',
+            'cp /etc/kubernetes/manifests/etcd.yaml /etc/kubernetes/manifests/etcd.yaml.original',
+            'cp /etc/kubernetes/manifests/kube-scheduler.yaml /etc/kubernetes/manifests/kube-scheduler.yaml.original',
+            'cp /etc/kubernetes/manifests/kube-apiserver.yaml /etc/kubernetes/manifests/kube-apiserver.yaml.original',
+            '',
+            '# Configure more tolerant liveness probe settings',
+            'sed -i "s/failureThreshold: 8/failureThreshold: 20/g" /etc/kubernetes/manifests/etcd.yaml',
+            'sed -i "s/initialDelaySeconds: 10/initialDelaySeconds: 30/g" /etc/kubernetes/manifests/etcd.yaml',
+            'sed -i "s/timeoutSeconds: 15/timeoutSeconds: 30/g" /etc/kubernetes/manifests/etcd.yaml',
+            '',
+            'sed -i "s/failureThreshold: 8/failureThreshold: 20/g" /etc/kubernetes/manifests/kube-scheduler.yaml',
+            'sed -i "s/initialDelaySeconds: 10/initialDelaySeconds: 30/g" /etc/kubernetes/manifests/kube-scheduler.yaml',
+            'sed -i "s/timeoutSeconds: 15/timeoutSeconds: 30/g" /etc/kubernetes/manifests/kube-scheduler.yaml',
+            '',
+            'sed -i "s/failureThreshold: 8/failureThreshold: 20/g" /etc/kubernetes/manifests/kube-apiserver.yaml',
+            'sed -i "s/initialDelaySeconds: 10/initialDelaySeconds: 30/g" /etc/kubernetes/manifests/kube-apiserver.yaml',
+            'sed -i "s/timeoutSeconds: 15/timeoutSeconds: 30/g" /etc/kubernetes/manifests/kube-apiserver.yaml',
+            '',
+            'echo "Liveness probe configuration completed"',
+            'systemctl restart kubelet',
+            'EOF',
+            'chmod +x /root/k8s-fixes/configure-probes.sh',
+            '',
+            '# Create systemd service to run probe configuration after kubeadm init',
+            'cat > /etc/systemd/system/k8s-probe-config.service << "EOF"',
+            '[Unit]',
+            'Description=Configure Kubernetes Liveness Probes',
+            'After=kubelet.service',
+            'Wants=kubelet.service',
+            '',
+            '[Service]',
+            'Type=oneshot',
+            'ExecStart=/root/k8s-fixes/configure-probes.sh',
+            'RemainAfterExit=true',
+            '',
+            '[Install]',
+            'WantedBy=multi-user.target',
+            'EOF',
+            '',
+            '# Enable the service but don\'t start it yet (will be triggered after kubeadm init)',
+            'systemctl enable k8s-probe-config.service',
 
             // Create simple instructions file
             'cat > /home/ec2-user/k8s-training.txt << "EOF"',
@@ -133,14 +223,26 @@ export class SimpleK8sStack extends Stack {
             '',
             'Ready for manual K8s setup! No automation - practice the commands.',
             '',
+            'PRE-FLIGHT CHECK (verify kernel modules):',
+            'lsmod | grep -E "(br_netfilter|ip_tables|iptable_nat|iptable_filter)"',
+            '# Should show all 4 modules loaded',
+            '',
             'CONTROL PLANE SETUP:',
             'sudo kubeadm init --pod-network-cidr=10.244.0.0/16',
             'mkdir -p $HOME/.kube',
             'sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config',
             'sudo chown $(id -u):$(id -g) $HOME/.kube/config',
             '',
-            'POD NETWORK (Flannel):',
+            'APPLY LIVENESS PROBE FIX (if control plane unstable):',
+            'sudo systemctl start k8s-probe-config.service',
+            '# This configures more tolerant liveness probe settings',
+            '# to prevent restart loops during cluster initialization',
+            '',
+            'POD NETWORK (Flannel - recommended):',
             'kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml',
+            '',
+            'ALTERNATIVE CNI (Weave):',
+            'kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.28/net.yaml',
             '',
             'WORKER NODE:',
             '# Copy the kubeadm join command from control plane init output',
@@ -204,6 +306,11 @@ export class SimpleK8sStack extends Stack {
         );
 
         // Outputs
+        new CfnOutput(this, 'SecurityGroupId', {
+            value: k8sSecurityGroup.securityGroupId,
+            description: 'Security Group ID for Kubernetes cluster',
+        });
+
         new CfnOutput(this, 'ControlPlaneInstanceId', {
             value: controlPlane.instanceId,
             description: 'Control Plane Instance ID',
