@@ -1724,13 +1724,26 @@ netstat -tlnp | grep 6443
 sudo crictl ps
 sudo crictl ps -a
 
-# Container logs
+# Container logs (multiple methods)
 sudo crictl logs <container-id>
+sudo crictl logs --tail=20 <container-id>
+sudo crictl logs --follow <container-id>
+sudo crictl logs --since="5m" <container-id>
+
+# Find and read logs by container name
 sudo crictl logs $(sudo crictl ps --name=kube-apiserver -q)
+sudo crictl logs $(sudo crictl ps --name=etcd -q) --tail=50
+
+# Read logs from exited containers
+sudo crictl ps -a | grep Exited
+sudo crictl logs <exited-container-id>
 
 # Pod information
 sudo crictl pods
 sudo crictl inspect <pod-id>
+
+# Real-time container monitoring
+sudo crictl ps -a | grep -E "(apiserver|etcd|scheduler)" | head -10
 ```
 
 ### **Kubernetes Tools**
@@ -1754,6 +1767,34 @@ kubeadm token list
 kubeadm token create --print-join-command
 ```
 
+### **AWS Session Manager (SSM) Access**
+```bash
+# Connect to EC2 instances without SSH (works from IDE terminal)
+aws ssm start-session --target i-065463b3db2974e6d
+
+# Connect to specific instances by role
+aws ssm start-session --target <control-plane-instance-id>
+aws ssm start-session --target <worker-node-instance-id>
+
+# List available SSM targets
+aws ssm describe-instance-information --query 'InstanceInformationList[*].[InstanceId,PlatformName,PingStatus]' --output table
+
+# Get instance IDs from CDK outputs (if available)
+aws cloudformation describe-stacks --stack-name SimpleK8sStack --query 'Stacks[0].Outputs'
+
+# Session Manager benefits for K8s troubleshooting:
+# - No need for SSH keys or bastion hosts
+# - Works through private subnets with VPC endpoints
+# - Integrated with IAM for access control
+# - Session logging and auditing capabilities
+# - Works directly from VS Code terminal
+
+# Tip: Keep multiple terminal tabs open for different nodes
+# Tab 1: Control plane troubleshooting
+# Tab 2: Worker node diagnostics  
+# Tab 3: Local kubectl commands
+```
+
 ### **Reset and Recovery**
 ```bash
 # Worker node reset
@@ -1765,6 +1806,75 @@ sudo systemctl restart kubelet
 sudo kubeadm reset --force
 sudo rm -rf /etc/kubernetes/
 sudo rm -rf /var/lib/etcd/
+```
+
+### **Practical Troubleshooting Workflow**
+
+#### **Step 1: Initial Assessment (IDE Terminal)**
+```bash
+# From your local VS Code terminal - no SSM needed yet
+kubectl get nodes
+kubectl get pods --all-namespaces
+kubectl cluster-info
+
+# If kubectl fails, connect to control plane
+aws ssm start-session --target i-065463b3db2974e6d
+```
+
+#### **Step 2: Remote System Analysis (SSM Session)**
+```bash
+# Once connected via SSM to control plane:
+
+# Check system health first
+sudo systemctl status kubelet
+sudo systemctl status containerd
+free -h && df -h
+
+# Check container runtime status
+sudo crictl ps -a | head -10
+sudo crictl ps -a | grep -E "(apiserver|etcd|scheduler)"
+
+# Read recent logs from failing components
+sudo crictl logs --tail=20 $(sudo crictl ps -a --name=kube-apiserver | grep -v CONTAINER | head -1 | awk '{print $1}')
+sudo crictl logs --tail=20 $(sudo crictl ps -a --name=etcd | grep -v CONTAINER | head -1 | awk '{print $1}')
+```
+
+#### **Step 3: Systematic Log Analysis**
+```bash
+# System logs (most important first)
+sudo journalctl -u kubelet --since "10 minutes ago" --lines=30
+
+# Container runtime logs
+sudo journalctl -u containerd --since "10 minutes ago" --lines=20
+
+# Specific container logs for crashed components
+sudo crictl ps -a | grep Exited
+# Copy container ID and check logs:
+sudo crictl logs <container-id> --tail=50
+```
+
+#### **Step 4: Cross-Reference with kubectl (if API server working)**
+```bash
+# From local terminal or SSM session:
+kubectl describe pods -n kube-system | grep -A10 -B5 "Events\|Failed\|Error"
+kubectl get events --all-namespaces --sort-by='.lastTimestamp' | tail -20
+```
+
+#### **Step 5: Multi-Terminal Troubleshooting Setup**
+```bash
+# Terminal 1 (Local): kubectl commands and cluster overview
+kubectl get pods -n kube-system -w
+
+# Terminal 2 (SSM Control Plane): System and container logs
+aws ssm start-session --target <control-plane-id>
+sudo journalctl -u kubelet -f
+
+# Terminal 3 (SSM Worker - if needed): Worker node diagnostics  
+aws ssm start-session --target <worker-node-id>
+sudo crictl ps -a
+
+# Terminal 4 (Local): Documentation and notes
+# Keep troubleshooting guide open for reference commands
 ```
 
 ---
@@ -1833,6 +1943,51 @@ kubectl cluster-info
 ```bash
 sudo journalctl -u kubelet --lines=10
 sudo crictl ps | grep -E "(apiserver|etcd)"
+```
+
+### **crictl Quick Reference**
+```bash
+# Container status overview
+sudo crictl ps -a | head -10                    # All containers
+sudo crictl ps -a --state=Exited               # Only crashed containers  
+sudo crictl ps -a --name=etcd                  # Specific container name
+
+# Log reading patterns
+sudo crictl logs --tail=20 <container-id>      # Last 20 lines
+sudo crictl logs --since=5m <container-id>     # Last 5 minutes
+sudo crictl logs --follow <container-id>       # Stream logs (like tail -f)
+
+# Find container ID by name and read logs
+ETCD_ID=$(sudo crictl ps -a --name=etcd -q | head -1)
+sudo crictl logs --tail=30 $ETCD_ID
+
+# Check multiple components quickly  
+for component in etcd kube-apiserver kube-scheduler; do
+  echo "=== $component logs ==="
+  sudo crictl logs --tail=5 $(sudo crictl ps -a --name=$component -q | head -1) 2>/dev/null || echo "No container found"
+done
+
+# Pod and container relationship
+sudo crictl pods                                # List all pods
+sudo crictl inspect <container-id>             # Detailed container info
+sudo crictl inspect <pod-id>                   # Detailed pod info
+```
+
+### **AWS SSM Quick Commands**
+```bash
+# Connect to instances (use from VS Code terminal)
+aws ssm start-session --target i-065463b3db2974e6d  # Control plane
+aws ssm start-session --target i-<worker-node-id>   # Worker node
+
+# Get instance IDs from stack outputs
+aws cloudformation describe-stacks --stack-name SimpleK8sStack \
+  --query 'Stacks[0].Outputs[?OutputKey==`ControlPlaneInstanceId`].OutputValue' \
+  --output text
+
+# Check SSM connectivity before troubleshooting
+aws ssm describe-instance-information \
+  --query 'InstanceInformationList[?PingStatus==`Online`].[InstanceId,PlatformName]' \
+  --output table
 ```
 
 This troubleshooting experience demonstrates the importance of systematic debugging using multiple tool layers for successful Kubernetes cluster management and certification preparation.
