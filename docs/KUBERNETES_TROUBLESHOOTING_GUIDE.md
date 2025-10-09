@@ -1574,7 +1574,226 @@ sudo crictl ps -a | grep -E "(etcd|scheduler|apiserver)" | sort -k3
 
 ---
 
-## Scenario 10: When to Reset vs. Continue Troubleshooting
+## Scenario 10: CIDR Range Conflicts Causing Networking Instability
+
+### **Problem Description**
+- **Cluster appears to initialize but remains unstable**
+- **Intermittent API server connectivity issues**
+- **CNI plugins install but networking doesn't work properly**
+- **Multiple control plane components restart frequently**
+- **Container runtime and Kubernetes networks overlap**
+
+### **Symptoms**
+```bash
+$ kubectl get nodes
+The connection to the server 10.0.2.80:6443 was refused - did you specify the right host or port?
+# Works sometimes, fails other times
+
+$ kubectl get pods -n kube-system
+NAME                          READY   STATUS             RESTARTS   AGE
+kube-apiserver-xxx            0/1     Running            20         45m
+# High restart counts on control plane components
+```
+
+### **Root Cause Analysis**
+
+#### **Step 1: Identify All CIDR Ranges in Use**
+```bash
+# AWS VPC and subnet ranges
+ip route show | grep 10.
+ip addr show | grep inet | grep 10.
+
+# Kubernetes configured ranges
+kubectl get nodes -o wide 2>/dev/null || echo "API server not accessible"
+sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep service-cluster-ip-range
+
+# Container runtime bridge networks
+ip link show type bridge
+brctl show 2>/dev/null || echo "Bridge utils not available"
+```
+
+#### **Step 2: Check for Overlapping Networks**
+```bash
+# Common conflict patterns:
+# VPC CIDR:     10.0.0.0/16     (AWS infrastructure)
+# Pod CIDR:     10.244.0.0/16   (Kubernetes pods) 
+# Service CIDR: 10.96.0.0/12    (Kubernetes services)
+# Docker/CNI:   10.x.x.x/16     (Container runtime bridges)
+
+# Look for overlaps:
+echo "=== Network Range Analysis ==="
+echo "VPC/EC2 networks:"
+ip route | grep 10. | sort
+
+echo "Container bridge networks:"  
+sudo ip addr show docker0 2>/dev/null | grep inet || echo "No docker0"
+sudo ip addr show cni0 2>/dev/null | grep inet || echo "No cni0"
+```
+
+#### **Step 3: Verify kubeadm Configuration**
+```bash
+# Check what CIDR was actually used during init
+sudo cat /etc/kubernetes/manifests/kube-controller-manager.yaml | grep cluster-cidr
+sudo cat /etc/kubernetes/manifests/kube-apiserver.yaml | grep service-cluster-ip-range
+
+# Check kubeadm config stored in cluster
+kubectl get cm kubeadm-config -n kube-system -o yaml | grep -A5 -B5 networking
+```
+
+### **Root Cause**
+**Overlapping CIDR ranges** between different network layers:
+
+**Common Conflict Scenarios:**
+1. **VPC vs Pod Network**: 10.0.0.0/16 (VPC) conflicts with 10.0.0.0/8 (broad pod range)
+2. **Container Runtime Conflicts**: Docker daemon using 10.244.x.x conflicts with Flannel 10.244.0.0/16
+3. **Service Network Overlap**: Service CIDR overlaps with host network or pod CIDR
+4. **CNI Bridge Conflicts**: Existing bridge networks from previous installations
+
+### **Solution 1: Complete CIDR Conflict Reset and Rebuild**
+```bash
+# Step 1: Complete cluster reset
+sudo kubeadm reset --force
+
+# Step 2: Clean up ALL conflicting network interfaces
+sudo ip link set cni0 down 2>/dev/null || true
+sudo ip link delete cni0 2>/dev/null || true
+sudo ip link set flannel.1 down 2>/dev/null || true  
+sudo ip link delete flannel.1 2>/dev/null || true
+sudo ip link set docker0 down 2>/dev/null || true
+sudo ip link delete docker0 2>/dev/null || true
+
+# Step 3: Remove all network and cluster state
+sudo rm -rf /etc/cni/net.d/*
+sudo rm -rf /var/lib/etcd/*
+sudo rm -rf /var/lib/kubelet/*
+
+# Step 4: Disable conflicting container runtimes (if both Docker + containerd running)
+sudo systemctl stop docker
+sudo systemctl disable docker
+# Note: Docker socket warning is normal and harmless
+
+# Step 5: Verify clean network state
+echo "=== Network State After Cleanup ==="
+ip route | grep -E "10\.244|172\.16|192\.168" || echo "No pod network routes found - GOOD"
+ip addr show | grep -E "cni0|flannel|docker0" || echo "No conflicting interfaces found - GOOD"
+
+# Step 6: Initialize with non-conflicting pod network CIDR
+# VPC uses 10.0.0.0/16, so use completely different address space
+sudo kubeadm init \
+  --pod-network-cidr=172.16.0.0/16 \
+  --service-cidr=10.96.0.0/12 \
+  --apiserver-advertise-address=$(hostname -I | awk '{print $1}')
+
+# Step 7: Configure kubectl
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+# Step 8: Install CNI with matching CIDR
+# For Flannel with custom CIDR:
+curl -s https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml | \
+  sed 's/10.244.0.0\/16/172.16.0.0\/16/' | \
+  kubectl apply -f -
+
+# Step 9: Verify no CIDR conflicts
+echo "=== Final Network Verification ==="
+echo "VPC network: $(ip route | grep 'dev ens5' | grep -E '10\.[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+echo "Pod network: $(kubectl get nodes -o wide --no-headers | awk '{print $5}')"
+echo "Service network: $(kubectl get svc kubernetes -o jsonpath='{.spec.clusterIP}')/12"
+```
+
+### **Solution 2: Fix Container Runtime Conflicts**
+```bash
+# Stop services and clean conflicting networks
+sudo systemctl stop kubelet
+sudo systemctl stop containerd
+sudo systemctl stop docker 2>/dev/null || true
+
+# Remove conflicting bridge networks
+sudo ip link set docker0 down 2>/dev/null || true
+sudo brctl delbr docker0 2>/dev/null || true
+sudo ip link set cni0 down 2>/dev/null || true  
+sudo brctl delbr cni0 2>/dev/null || true
+
+# Configure Docker daemon to use non-conflicting range (if using Docker)
+sudo mkdir -p /etc/docker
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "bip": "172.17.0.1/16",
+  "default-address-pools": [
+    {"base": "172.18.0.0/16", "size": 24}
+  ]
+}
+EOF
+
+# Restart services
+sudo systemctl start containerd
+sudo systemctl start kubelet
+```
+
+### **Solution 3: AWS-Optimized CIDR Selection**
+```bash
+# For AWS EC2 environments, use ranges that don't conflict:
+
+# VPC CIDR:     10.0.0.0/16      (AWS managed)
+# Pod CIDR:     172.16.0.0/16    (Non-conflicting) 
+# Service CIDR: 10.96.0.0/12     (Default, doesn't overlap)
+
+sudo kubeadm init \
+  --pod-network-cidr=172.16.0.0/16 \
+  --service-cidr=10.96.0.0/12 \
+  --apiserver-advertise-address=$(hostname -I | awk '{print $1}')
+```
+
+### **Verification Commands**
+```bash
+# After fixing CIDR conflicts, verify no overlaps:
+echo "=== Network Verification ==="
+echo "VPC routes:"
+ip route | grep -E "(10\.|172\.|192\.)"
+
+echo "Kubernetes pod CIDR:" 
+kubectl get nodes -o wide
+
+echo "Kubernetes service CIDR:"
+kubectl get svc kubernetes -n default
+
+echo "Container bridge networks:"
+ip addr show | grep -A2 "docker0\|cni0" || echo "No conflicting bridges"
+
+# All should show non-overlapping ranges
+```
+
+### **Prevention for CDK Infrastructure**
+```typescript
+// Update CDK stack to use non-conflicting CIDRs from the start
+const vpc = new Vpc(this, 'K8sVpc', {
+  maxAzs: 2,
+  // Use 10.0.0.0/16 for VPC (as currently configured)
+  // Configure kubeadm to use 172.16.0.0/16 for pods
+  // This avoids any overlap
+});
+
+// Add to user data:
+userData.addCommands(
+  '# Use non-conflicting pod network CIDR',
+  'echo "KUBELET_EXTRA_ARGS=--pod-network-cidr=172.16.0.0/16" > /etc/default/kubelet'
+);
+```
+
+### **Key Insight**
+CIDR conflicts often cause **intermittent failures** rather than complete failures, making them hard to diagnose. The cluster may work briefly when components restart with different network assignments, then fail when networks clash.
+
+### **Tools Used**
+- `ip route show` - Network route inspection
+- `ip addr show` - Network interface analysis  
+- `brctl show` - Bridge network identification
+- `kubeadm reset` - Clean cluster state for CIDR changes
+- Network range calculators for overlap detection
+
+---
+
+## Scenario 11: When to Reset vs. Continue Troubleshooting
 
 ### **Problem Description**
 - Multiple troubleshooting attempts have been made
