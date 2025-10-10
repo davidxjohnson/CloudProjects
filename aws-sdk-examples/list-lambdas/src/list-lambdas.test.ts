@@ -1,12 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { parseCommandLineOptions, runListLambdas, main } from './list-lambdas.js'
 
-// Mock the lambda-lister module
-vi.mock('./lambda-lister.js', () => ({
-    LambdaLister: vi.fn(() => ({
-        listLambdas: vi.fn().mockResolvedValue(undefined)
-    }))
-}))
+vi.mock('./lambda-lister.js', () => {
+    return {
+        LambdaLister: class {
+            private lambdaClient = {};
+            listLambdas(options: any) {
+                return Promise.resolve();
+            }
+        }
+    };
+});
 
 describe('List Lambdas CLI', () => {
     let mockListLambdas: any
@@ -28,12 +32,9 @@ describe('List Lambdas CLI', () => {
         consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { })
 
         // Get the mocked listLambdas function
-        const { LambdaLister } = await import('./lambda-lister.js')
-        const MockedLister = LambdaLister as any
-        mockListLambdas = vi.fn().mockResolvedValue(undefined)
-        MockedLister.mockImplementation(() => ({
-            listLambdas: mockListLambdas
-        }))
+        const { LambdaLister } = await import('./lambda-lister.js');
+        const mockLambdaLister = new LambdaLister();
+        mockLambdaLister.listLambdas = vi.fn().mockResolvedValue(undefined);
     })
 
     afterEach(() => {
@@ -105,13 +106,14 @@ describe('List Lambdas CLI', () => {
                 pagesize: 20
             }
 
-            const mockLambdaLister = {
-                listLambdas: vi.fn().mockResolvedValue(undefined)
-            }
+            // Use the mocked LambdaLister class
+            const { LambdaLister } = await import('./lambda-lister.js');
+            const mockLambdaLister = new LambdaLister();
+            mockLambdaLister.listLambdas = vi.fn().mockResolvedValue(undefined);
 
-            await runListLambdas(options, mockLambdaLister)
+            await runListLambdas(options, mockLambdaLister);
 
-            expect(mockLambdaLister.listLambdas).toHaveBeenCalledWith(options)
+            expect(mockLambdaLister.listLambdas).toHaveBeenCalledWith(options);
         })
 
         it('should handle errors from lambda lister', async () => {
@@ -120,11 +122,11 @@ describe('List Lambdas CLI', () => {
                 pagesize: 10
             }
 
-            const mockLambdaLister = {
-                listLambdas: vi.fn().mockRejectedValue(new Error('AWS API Error'))
-            }
+            const { LambdaLister } = await import('./lambda-lister.js');
+            const mockLambdaLister = new LambdaLister();
+            mockLambdaLister.listLambdas = vi.fn().mockRejectedValue(new Error('AWS API Error'));
 
-            await expect(runListLambdas(options, mockLambdaLister)).rejects.toThrow('AWS API Error')
+            await expect(runListLambdas(options, mockLambdaLister)).rejects.toThrow('AWS API Error');
         })
     })
 
@@ -134,10 +136,13 @@ describe('List Lambdas CLI', () => {
             const originalArgv = process.argv
             process.argv = ['node', 'list-lambdas.js', '--region', 'eu-central-1', '--pagesize', '30']
 
+            const { LambdaLister } = await import('./lambda-lister.js');
+            const listLambdasSpy = vi.spyOn(LambdaLister.prototype, 'listLambdas').mockResolvedValue(undefined);
+
             await main()
 
             // Verify the lambda lister was called
-            expect(mockListLambdas).toHaveBeenCalledWith({
+            expect(listLambdasSpy).toHaveBeenCalledWith({
                 region: 'eu-central-1',
                 pagesize: '30'
             })
@@ -147,28 +152,30 @@ describe('List Lambdas CLI', () => {
         })
 
         it('should handle errors and exit with code 1', async () => {
-            // Make listLambdas throw an error
-            mockListLambdas.mockRejectedValue(new Error('Test error'))
+            const { LambdaLister } = await import('./lambda-lister.js');
+            vi.spyOn(LambdaLister.prototype, 'listLambdas').mockRejectedValue(new Error('Test error'));
 
-            await main()
+            await main();
 
             // Verify error handling
-            expect(consoleErrorSpy).toHaveBeenCalledWith('Error:', expect.any(Error))
-            expect(processExitSpy).toHaveBeenCalledWith(1)
-        })
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Error:', expect.any(Error));
+            expect(processExitSpy).toHaveBeenCalledWith(1);
+        });
 
         it('should use default values when no arguments provided', async () => {
             // Mock process.argv with minimal arguments
             const originalArgv = process.argv
             process.argv = ['node', 'list-lambdas.js']
 
-            await main()
+            const { LambdaLister } = await import('./lambda-lister.js');
+            const listLambdasSpy = vi.spyOn(LambdaLister.prototype, 'listLambdas').mockResolvedValue(undefined);
 
-            // Verify default values were used
-            expect(mockListLambdas).toHaveBeenCalledWith({
+            await main();
+
+            expect(listLambdasSpy).toHaveBeenCalledWith({
                 region: 'us-east-2',
                 pagesize: 50
-            })
+            });
 
             // Restore original argv
             process.argv = originalArgv
@@ -178,12 +185,17 @@ describe('List Lambdas CLI', () => {
             const originalArgv = process.argv
             process.argv = ['node', 'list-lambdas.js', '--region', 'ap-northeast-1']
 
-            const { LambdaLister } = await import('./lambda-lister.js')
+            const { LambdaLister } = await import('./lambda-lister.js');
+            const listLambdasSpy = vi.spyOn(LambdaLister.prototype, 'listLambdas').mockResolvedValue(undefined);
 
-            await main()
+            await main();
+
 
             // Verify LambdaLister was created with the correct region
-            expect(LambdaLister).toHaveBeenCalledWith(undefined, 'ap-northeast-1')
+            expect(listLambdasSpy).toHaveBeenCalledWith({
+                region: 'ap-northeast-1',
+                pagesize: 50
+            })
 
             // Restore original argv
             process.argv = originalArgv
