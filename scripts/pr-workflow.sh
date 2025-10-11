@@ -69,7 +69,7 @@ validate_changes() {
         pnpm -r build
         
         print_status "Running tests..."
-        pnpm -r test
+        pnpm -r test --coverage
         
         print_status "Security audit..."
         pnpm audit

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r build",
-    "test": "pnpm -r test",
+    "test": "pnpm -r test --coverage",
+    "merge-coverage": "npx lcov-result-merger '**/coverage/lcov.info' > coverage/lcov.info",
     "lint": "./lint.sh",
     "clean": "pnpm -r exec rm -rf dist lib node_modules",
     "install:all": "pnpm install"
@@ -45,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^8.46.0",
     "@typescript-eslint/parser": "^8.46.0",
     "eslint": "^9.37.0",
+    "lcov-result-merger": "5.0.1",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.46.0"
   },

@@ -35,9 +35,9 @@ pids
 *.pid.lock
 
 # Coverage directory used by tools like istanbul
-coverage/
-*.lcov
-.nyc_output
+# coverage/
+# *.lcov
+# .nyc_output
 
 # IDEs and editors
 .vscode/
@@ -96,7 +96,7 @@ temp/
 test-results/
 playwright-report/
 test-report/
-coverage/
+# coverage/
 
 # Prevent accidental npm usage in pnpm monorepo
 package-lock.json

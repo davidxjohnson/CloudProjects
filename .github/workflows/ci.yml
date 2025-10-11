@@ -189,7 +189,7 @@ jobs:
         continue-on-error: true
         with:
           lcov-file: ${{ matrix.package.path }}/coverage/lcov.info
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.CODECOV_TOKEN }}
           title: Coverage Report - ${{ matrix.package.name }}
 
   # Job 4: Security audit
