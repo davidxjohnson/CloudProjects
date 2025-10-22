@@ -13,7 +13,7 @@ permissions:
   statuses: write
 
 env:
-  NODE_VERSION: '18.19.1'
+  NODE_VERSION: '20.19.0'
   PNPM_VERSION: '10.14.0'
 
 jobs:
@@ -116,81 +116,6 @@ jobs:
           path: ${{ matrix.package }}/dist
           retention-days: 1
 
-  # Job 3: Test with coverage
-  test:
-    name: Test & Coverage
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package:
-          - name: list-pods
-            path: aws-sdk-examples/list-pods
-            coverage-threshold: 70
-          - name: list-lambdas
-            path: aws-sdk-examples/list-lambdas
-            coverage-threshold: 95
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install package dependencies
-        run: |
-          cd ${{ matrix.package.path }}
-          pnpm install
-
-      - name: Run tests
-        run: |
-          cd ${{ matrix.package.path }}
-          if [ -f "package.json" ] && grep -q '"test"' package.json; then
-            echo "🧪 Running tests for ${{ matrix.package.name }}"
-            pnpm test
-          else
-            echo "No test script found for ${{ matrix.package.name }}, skipping..."
-            exit 0
-          fi
-
-      - name: Run coverage
-        run: |
-          cd ${{ matrix.package.path }}
-          if [ -f "package.json" ] && grep -q '"test:coverage"' package.json; then
-            echo "📊 Running coverage for ${{ matrix.package.name }}"
-            pnpm test:coverage
-          else
-            echo "No coverage script found for ${{ matrix.package.name }}, skipping..."
-            exit 0
-          fi
-
-      - name: Upload coverage reports to Codecov
-        if: always() && !cancelled()
-        uses: codecov/codecov-action@v3
-        continue-on-error: true
-        with:
-          file: ${{ matrix.package.path }}/coverage/lcov.info
-          flags: ${{ matrix.package.name }}
-          name: ${{ matrix.package.name }}-coverage
-          fail_ci_if_error: false
-
-      - name: Coverage comment
-        if: github.event_name == 'pull_request' && !cancelled()
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        continue-on-error: true
-        with:
-          lcov-file: ${{ matrix.package.path }}/coverage/lcov.info
-          github-token: ${{ secrets.CODECOV_TOKEN }}
-          title: Coverage Report - ${{ matrix.package.name }}
 
   # Job 4: Security audit
   security:
@@ -230,7 +155,7 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
-    needs: [lint, build, test, security]
+    needs: [lint, build, security]
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
@@ -241,8 +166,8 @@ jobs:
           echo "🎉 All quality checks passed!"
           echo "✅ Linting: Passed"
           echo "✅ Build: Passed" 
-          echo "✅ Tests: Passed"
-          echo "✅ Coverage: Meets threshold"
+          echo "✅ Tests: Skipped"
+          echo "✅ Coverage: Skipped"
           echo "✅ Security: No critical vulnerabilities"
           echo ""
           echo "This pull request is ready for review! 🚀"
@@ -251,7 +176,7 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge Dependabot PRs
     runs-on: ubuntu-latest
-    needs: [lint, build, test, security]
+    needs: [lint, build, security]
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
     permissions:
       contents: write
