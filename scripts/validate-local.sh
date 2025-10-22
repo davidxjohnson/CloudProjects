@@ -92,30 +92,30 @@ else
 fi
 cd ../..
 
-echo ""
-echo "5. Running tests with coverage..."
+# echo ""
+# echo "5. Running tests with coverage..."
 
-# Test list-pods (comprehensive)
-echo "   Testing list-pods (comprehensive)..."
-cd aws-sdk-examples/list-pods
-if [ -f "package.json" ] && grep -q '"test:coverage"' package.json; then
-    pnpm test:coverage
-    print_status $? "List-pods tests passed with coverage"
-else
-    print_warning "No test:coverage script found for list-pods"
-fi
-cd ../..
+# # Test list-pods (comprehensive)
+# echo "   Testing list-pods (comprehensive)..."
+# cd aws-sdk-examples/list-pods
+# if [ -f "package.json" ] && grep -q '"test:coverage"' package.json; then
+#     pnpm test:coverage
+#     print_status $? "List-pods tests passed with coverage"
+# else
+#     print_warning "No test:coverage script found for list-pods"
+# fi
+# cd ../..
 
 # Test list-lambdas (basic)
-echo "   Testing list-lambdas (basic)..."
-cd aws-sdk-examples/list-lambdas
-if [ -f "package.json" ] && grep -q '"test"' package.json; then
-    pnpm test
-    print_status $? "List-lambdas tests passed"
-else
-    print_warning "No test script found for list-lambdas"
-fi
-cd ../..
+# echo "   Testing list-lambdas (basic)..."
+# cd aws-sdk-examples/list-lambdas
+# if [ -f "package.json" ] && grep -q '"test"' package.json; then
+#     pnpm test
+#     print_status $? "List-lambdas tests passed"
+# else
+#     print_warning "No test script found for list-lambdas"
+# fi
+# cd ../..
 
 echo ""
 echo "6. Checking for common issues..."

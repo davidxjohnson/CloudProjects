@@ -2,7 +2,6 @@
 
 [![CI/CD Pipeline](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/ci.yml)
 [![PR Validation](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/davidxjohnson/CloudProjects/actions/workflows/pr-validation.yml)
-[![codecov](https://codecov.io/gh/davidxjohnson/CloudProjects/branch/main/graph/badge.svg)](https://codecov.io/gh/davidxjohnson/CloudProjects)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Modern TypeScript cloud development demonstrating AWS infrastructure, DevOps automation, and production-ready testing practices.
