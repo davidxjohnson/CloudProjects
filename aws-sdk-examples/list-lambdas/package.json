@@ -5,15 +5,12 @@
   "type": "module",
   "main": "dist/list-lambdas.js",
   "engines": {
-    "node": ">=18.19.1"
+    "node": ">=20.19.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "tsc --watch",
-    "start": "node dist/list-lambdas.js",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "start": "node dist/list-lambdas.js"
   },
   "dependencies": {
     "@aws-sdk/client-lambda": "3.908.0",
@@ -22,8 +19,6 @@
   },
   "devDependencies": {
     "@types/node": "^24.7.2",
-    "@vitest/coverage-v8": "2.1.9",
-    "typescript": "5.9.3",
-    "vitest": "2.1.9"
+    "typescript": "5.9.3"
   }
 }

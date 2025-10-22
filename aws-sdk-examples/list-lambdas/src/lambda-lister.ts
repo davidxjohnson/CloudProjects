@@ -1,3 +1,5 @@
+// ...existing code...
+
 import {
     LambdaClient, paginateListFunctions, LambdaPaginationConfiguration,
     ListFunctionsCommandInput, ListFunctionsCommandOutput
@@ -19,6 +21,10 @@ export class LambdaLister {
             // Initialize new client with region
             this.lambdaClient = new LambdaClient({ region: region || 'us-east-2' })
         }
+    }
+
+    public getClient(): LambdaClient {
+        return this.lambdaClient;
     }
 
     async listLambdas(options: LambdaListOptions): Promise<void> {
